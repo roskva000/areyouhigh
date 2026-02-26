@@ -1,27 +1,68 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ExperienceCard from '../components/ExperienceCard';
 import { EXPERIENCES } from '../data/experiences';
-import { Search, Filter, ArrowLeft } from 'lucide-react';
+import { Search, ArrowLeft } from 'lucide-react';
 
 export default function Gallery() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
-    const [customColors] = useState(() => {
-        const saved = localStorage.getItem('experience_colors');
-        return saved ? JSON.parse(saved) : {};
+
+    // Group experiences by Master Shader
+    const masterGroups = useMemo(() => {
+        const groups = {};
+        EXPERIENCES.forEach(exp => {
+            if (!groups[exp.master]) {
+                groups[exp.master] = [];
+            }
+            groups[exp.master].push(exp);
+        });
+
+        // Convert map to array for sorting/filtering
+        return Object.keys(groups).map(key => {
+            const items = groups[key];
+            const isSpecial = key.startsWith('special_');
+
+            // For special/featured items (singletons), use their exact title
+            // For groups, format the master key
+            let title = items[0].title;
+            if (!isSpecial) {
+                 title = key
+                    .split('_')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+            }
+
+            return {
+                id: key, // Master Key
+                isSpecial,
+                title: title,
+                category: items[0].category,
+                items: items,
+                thumbId: items[0].thumbId, // Use the first item's thumb
+                accent: items[0].accent
+            };
+        });
+    }, []);
+
+    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+
+    const filteredGroups = masterGroups.filter(group => {
+        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
+            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
+        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+        return matchesSearch && matchesCategory;
     });
 
-    const categories = ['All', ...new Set(EXPERIENCES.map(e => e.category))];
-
-    const filtered = EXPERIENCES.filter(exp => {
-        const matchesSearch = exp.title.toLowerCase().includes(search.toLowerCase()) ||
-            exp.desc.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = activeCategory === 'All' || exp.category === activeCategory;
-        return matchesSearch && matchesCategory;
+    // Sort: Specials first, then others
+    const sortedGroups = [...filteredGroups].sort((a, b) => {
+        if (a.isSpecial && !b.isSpecial) return -1;
+        if (!a.isSpecial && b.isSpecial) return 1;
+        return 0;
     });
 
     useEffect(() => {
@@ -41,6 +82,16 @@ export default function Gallery() {
         return () => ctx.revert();
     }, [activeCategory]);
 
+    const handleCardClick = (group) => {
+        if (group.isSpecial) {
+            // Special experiences navigate directly to the experience
+            navigate(`/experience/${group.items[0].id}`);
+        } else {
+            // Groups navigate to the collection page
+            navigate(`/gallery/${group.id}`);
+        }
+    };
+
     return (
         <div className="relative w-full min-h-screen bg-background antialiased overflow-x-hidden selection:bg-accent/30 selection:text-white">
             <Navbar />
@@ -59,8 +110,9 @@ export default function Gallery() {
                             Visual <span className="font-drama italic text-accent">Archive.</span>
                         </h1>
                         <p className="font-mono text-text/50 text-sm md:text-base leading-relaxed">
-                            130 ultra-high resolution WebGL experiences and psychedelic concepts. <br className="hidden md:block" />
-                            Designed to expand your mind and feel digital art to your core.
+                            {EXPERIENCES.length} unique experiences organized into {masterGroups.length} master algorithms.
+                            <br className="hidden md:block" />
+                            Select a core shader to explore its variations.
                         </p>
                     </div>
 
@@ -70,7 +122,7 @@ export default function Gallery() {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/20 group-focus-within:text-accent transition-colors" size={18} />
                             <input
                                 type="text"
-                                placeholder="Search experiences..."
+                                placeholder="Search algorithms..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="w-full md:w-80 bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-text focus:outline-none focus:border-accent/40 transition-all font-mono text-sm"
@@ -96,60 +148,30 @@ export default function Gallery() {
 
                 {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filtered.map((exp, index) => {
-                        const accentColor = customColors[exp.id] || exp.accent;
+                    {sortedGroups.map((group) => {
+                        const count = group.items.length;
+                        const description = group.isSpecial
+                            ? group.items[0].desc
+                            : `Collection of ${count} experiences based on the ${group.id} master shader.`;
 
                         return (
-                            <div
-                                key={exp.id}
-                                className="gallery-card group relative h-80 rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl"
-                                onClick={() => navigate(`/experience/${exp.id}`)}
-                            >
-                                {/* Dynamic Background Image */}
-                                <div className="absolute inset-0 z-0 bg-zinc-950">
-                                    <img
-                                        src={`https://images.unsplash.com/${exp.thumbId}?auto=format&fit=crop&q=80&w=800`}
-                                        alt={exp.title}
-                                        className="w-full h-full object-cover transition-all duration-1000 scale-110 group-hover:scale-100 opacity-40 group-hover:opacity-70 grayscale group-hover:grayscale-0"
-                                        loading="lazy"
-                                        onError={(e) => {
-                                            e.target.src = `https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800`;
-                                        }}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent z-1"></div>
-                                </div>
-
-                                {/* Dynamic Accent Glow */}
-                                <div className="absolute inset-x-0 bottom-0 h-1/2 transition-all duration-700 opacity-20 group-hover:opacity-40 z-2"
-                                    style={{ background: `linear-gradient(to top, ${accentColor}, transparent)` }}></div>
-
-                                {/* Content Over Glass */}
-                                <div className="absolute inset-0 p-8 flex flex-col justify-end z-10 backdrop-blur-[2px] group-hover:backdrop-blur-none transition-all duration-500">
-                                    <div className="relative transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                        <span className="font-mono text-[9px] uppercase tracking-[0.4em] mb-3 block group-hover:text-accent transition-colors" style={{ color: accentColor }}>
-                                            {exp.category} // 0{index + 1}
-                                        </span>
-                                        <h3 className="font-sans font-bold text-2xl text-white mb-2 leading-tight" style={{ color: accentColor }}>
-                                            {exp.title}
-                                        </h3>
-                                        <p className="font-mono text-[10px] text-white/40 line-clamp-2 leading-relaxed opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-                                            {exp.desc}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Corner Indicator */}
-                                <div className="absolute top-6 right-6 z-20 flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                                    <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: accentColor }}></div>
-                                    <span className="font-mono text-[8px] uppercase tracking-widest text-white/60">Active</span>
-                                </div>
-                            </div>
+                            <ExperienceCard
+                                key={group.id}
+                                title={group.title}
+                                category={group.category}
+                                thumbId={group.thumbId}
+                                accentColor={group.accent}
+                                description={description}
+                                isSpecial={group.isSpecial}
+                                variantCount={count}
+                                onClick={() => handleCardClick(group)}
+                            />
                         );
                     })}
 
-                    {filtered.length === 0 && (
+                    {sortedGroups.length === 0 && (
                         <div className="col-span-full py-20 text-center opacity-30 font-mono italic">
-                            No portals found matching your search.
+                            No master algorithms found matching your search.
                         </div>
                     )}
                 </div>
