@@ -562,182 +562,182 @@ export const EXPERIENCES = [
         title: 'Melting View',
         desc: 'Every object suddenly liquefying and dripping downwards.',
         bg: '#050505', accent: '#ff0033', category: 'Abstract', thumbId: 'photo-1550537339-12f13df891c6',
-        master: 'abstract', params: { chaos: 1.0, drift: 0.8, resolution: 0.2 }
+        master: 'abstract_dissolve', params: { chaos: 1.0, drift: 0.8, resolution: 0.2 }
     },
     {
         id: 'eye-wall',
         title: 'Eye Wall',
         desc: 'An invasion of flickering abstract and shadowy circles.',
         bg: '#0a0a0a', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1541701494587-cb58502866ab',
-        master: 'abstract', params: { chaos: 2.0, drift: 0.5, resolution: 1.0 }
+        master: 'abstract_dissolve', params: { chaos: 2.0, drift: 0.5, resolution: 1.0 }
     },
     {
         id: 'kaleido-burst',
         title: 'Kaleido Burst',
         desc: 'A sequence of symmetrically opening shapes.',
         bg: '#050005', accent: '#ff00ff', category: 'Abstract', thumbId: 'photo-1618005198113-568f81ea19c1',
-        master: 'abstract', params: { chaos: 1.5, drift: 1.0, resolution: 0.5 }
+        master: 'abstract_kaleido', params: { chaos: 1.5, drift: 1.0, resolution: 0.5 }
     },
     {
         id: 'visual-echo',
         title: 'Visual Echo',
         desc: 'Motion trails left by transparent copies.',
         bg: '#000000', accent: '#00ffff', category: 'Abstract', thumbId: 'photo-1550684848-fac1c5b4e853',
-        master: 'abstract', params: { chaos: 0.7, drift: 1.5, resolution: 0.8 }
+        master: 'abstract_kaleido', params: { chaos: 0.7, drift: 1.5, resolution: 0.8 }
     },
     {
         id: 'breath-env',
         title: 'Breathing Air',
         desc: 'The sensation of a giant lung expanding and contracting.',
         bg: '#0a0505', accent: '#ff6666', category: 'Abstract', thumbId: 'photo-1523438433331-9f949c2934ec',
-        master: 'abstract', params: { chaos: 0.5, drift: 0.3, resolution: 1.2 }
+        master: 'abstract_dissolve', params: { chaos: 0.5, drift: 0.3, resolution: 1.2 }
     },
     {
         id: 'geom-diss',
         title: 'Geometric Diss',
         desc: 'Objects breaking apart and scattering into thousands of pyramids.',
         bg: '#050505', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'abstract', params: { chaos: 2.5, drift: 0.7, resolution: 0.4 }
+        master: 'abstract_dissolve', params: { chaos: 2.5, drift: 0.7, resolution: 0.4 }
     },
     {
         id: 'perc-noise',
         title: 'Perc Noise',
         desc: 'An extremely fine-detailed television static state.',
         bg: '#0a0a0a', accent: '#666666', category: 'Abstract', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'abstract', params: { chaos: 3.0, drift: 0.1, resolution: 2.0 }
+        master: 'abstract_noise', params: { chaos: 3.0, drift: 0.1, resolution: 2.0 }
     },
     {
         id: 'imp-obj',
         title: 'Impossible Obj',
         desc: 'Paradoxical structures where beginning and end connect.',
         bg: '#000000', accent: '#ffcc00', category: 'Abstract', thumbId: 'photo-1563089145-599997674d42',
-        master: 'abstract', params: { chaos: 1.8, drift: 0.6, resolution: 0.9 }
+        master: 'abstract_kaleido', params: { chaos: 1.8, drift: 0.6, resolution: 0.9 }
     },
     {
         id: 'mirror-room',
         title: 'Mirror Room',
         desc: 'Bent surfaces showing reflections of reflections.',
         bg: '#050505', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1511367461989-f85a21fda167',
-        master: 'abstract', params: { chaos: 0.9, drift: 0.4, resolution: 1.5 }
+        master: 'abstract_kaleido', params: { chaos: 0.9, drift: 0.4, resolution: 1.5 }
     },
     {
         id: 'synesth-flow',
         title: 'Synesth Flow',
         desc: 'An area reacting to sound frequencies with sharp waves.',
         bg: '#000000', accent: '#ff0080', category: 'Abstract', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'abstract', params: { chaos: 1.2, drift: 2.0, resolution: 0.6 }
+        master: 'abstract_flow', params: { chaos: 1.2, drift: 2.0, resolution: 0.6 }
     },
     {
         id: 'dream-void',
         title: 'Dream Login',
         desc: 'Geometries shifting on a surreal plane.',
         bg: '#0a0a0a', accent: '#00ffff', category: 'Abstract', thumbId: 'photo-1614850523459-c2f4c699c52e',
-        master: 'abstract', params: { chaos: 1.7, drift: 1.3, resolution: 0.7 }
+        master: 'abstract_kaleido', params: { chaos: 1.7, drift: 1.3, resolution: 0.7 }
     },
     {
         id: 'entropy-field',
         title: 'Entropy Field',
         desc: 'The destruction of digital signals and information.',
         bg: '#050505', accent: '#ff0000', category: 'Abstract', thumbId: 'photo-1605001011156-cbf0b0f67a51',
-        master: 'abstract', params: { chaos: 3.5, drift: 0.9, resolution: 0.3 }
+        master: 'abstract_dissolve', params: { chaos: 3.5, drift: 0.9, resolution: 0.3 }
     },
     {
         id: 'static-medit',
         title: 'Static Static',
         desc: 'Digital noise and texture meditation.',
         bg: '#0a0a0a', accent: '#666666', category: 'Abstract', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'abstract', params: { chaos: 2.2, drift: 0.2, resolution: 1.8 }
+        master: 'abstract_noise', params: { chaos: 2.2, drift: 0.2, resolution: 1.8 }
     },
     {
         id: 'color-void',
         title: 'Color Void',
         desc: 'A pure infusion of spectrum colors with no boundaries or shapes.',
         bg: '#000000', accent: '#ff00ff', category: 'Abstract', thumbId: 'photo-1550684848-fac1c5b4e853',
-        master: 'abstract', params: { chaos: 1.5, drift: 0.5, resolution: 0.1 }
+        master: 'abstract_dissolve', params: { chaos: 1.5, drift: 0.5, resolution: 0.1 }
     },
     {
         id: 'geometric-chaos',
         title: 'Geometric Chaos',
         desc: 'Triangles and circles colliding in a non-linear digital space.',
         bg: '#050505', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1557683316-973673baf926',
-        master: 'abstract', params: { chaos: 2.5, drift: 1.2, resolution: 0.5 }
+        master: 'abstract_dissolve', params: { chaos: 2.5, drift: 1.2, resolution: 0.5 }
     },
     {
         id: 'ink-blot-test',
         title: 'Rorschach Digital',
         desc: 'Symmetrical abstract forms that reveal your inner thoughts.',
         bg: '#0a0a0a', accent: '#333333', category: 'Abstract', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'abstract', params: { chaos: 0.8, drift: 0.2, resolution: 2.0 }
+        master: 'abstract_kaleido', params: { chaos: 0.8, drift: 0.2, resolution: 2.0 }
     },
     {
         id: 'pixel-rain',
         title: 'Pixel Rain',
         desc: 'Vertical streams of colored information falling into the void.',
         bg: '#000000', accent: '#00ffaa', category: 'Abstract', thumbId: 'photo-1451187580459-43490279c0fa',
-        master: 'abstract', params: { chaos: 1.2, drift: 3.0, resolution: 0.8 }
+        master: 'abstract_dissolve', params: { chaos: 1.2, drift: 3.0, resolution: 0.8 }
     },
     {
         id: 'abstract-flow',
         title: 'Infinite Flow',
         desc: 'A continuous stream of abstract shapes emerging from the center.',
         bg: '#050a10', accent: '#7b61ff', category: 'Abstract', thumbId: 'photo-1518133910546-b6c2fb7d79e3',
-        master: 'abstract', params: { chaos: 1.8, drift: 0.6, resolution: 1.5 }
+        master: 'abstract_flow', params: { chaos: 1.8, drift: 0.6, resolution: 1.5 }
     },
     {
         id: 'monochrome-trip',
         title: 'Mono Trip',
         desc: 'High contrast black and white patterns that vibrate on the screen.',
         bg: '#000000', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1550684848-fac1c5b4e853',
-        master: 'abstract', params: { chaos: 3.0, drift: 0.1, resolution: 1.0 }
+        master: 'abstract_noise', params: { chaos: 3.0, drift: 0.1, resolution: 1.0 }
     },
     {
         id: 'vector-field',
         title: 'Vector Field',
         desc: 'Visualization of invisible forces guiding the movement of light.',
         bg: '#050505', accent: '#00ccff', category: 'Abstract', thumbId: 'photo-1509228468518-180dd4864904',
-        master: 'abstract', params: { chaos: 0.5, drift: 1.5, resolution: 1.2 }
+        master: 'abstract_flow', params: { chaos: 0.5, drift: 1.5, resolution: 1.2 }
     },
     {
         id: 'nebula-abstract',
         title: 'Nebula Dream',
         desc: 'Soft gaseous forms drifting in a deep violet digital sky.',
         bg: '#0a0514', accent: '#cc00ff', category: 'Abstract', thumbId: 'photo-1462331940025-496dfbfc7564',
-        master: 'abstract', params: { chaos: 1.0, drift: 0.4, resolution: 0.3 }
+        master: 'abstract_flow', params: { chaos: 1.0, drift: 0.4, resolution: 0.3 }
     },
     {
         id: 'point-cloud',
         title: 'Point Cloud',
         desc: 'Millions of discrete markers forming temporary structures.',
         bg: '#000000', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1558591710-4b4a1ae0f04d',
-        master: 'abstract', params: { chaos: 2.2, drift: 0.8, resolution: 4.0 }
+        master: 'abstract_flow', params: { chaos: 2.2, drift: 0.8, resolution: 4.0 }
     },
     {
         id: 'holographic-noise',
         title: 'Holo Noise',
         desc: 'Rainbow-colored noise static dancing across the surface.',
         bg: '#050505', accent: '#ff00ff', category: 'Abstract', thumbId: 'photo-1614850523296-e8110991352e',
-        master: 'abstract', params: { chaos: 4.0, drift: 2.0, resolution: 0.1 }
+        master: 'abstract_noise', params: { chaos: 4.0, drift: 2.0, resolution: 0.1 }
     },
     {
         id: 'minimalist-pulse',
         title: 'Minimal Pulse',
         desc: 'A single point of light expanding and contracting in the void.',
         bg: '#000000', accent: '#ffffff', category: 'Abstract', thumbId: 'photo-1506318137071-a8e063b4bcc0',
-        master: 'abstract', params: { chaos: 0.1, drift: 0.3, resolution: 1.0 }
+        master: 'abstract_dissolve', params: { chaos: 0.1, drift: 0.3, resolution: 1.0 }
     },
     {
         id: 'curved-space',
         title: 'Curved Space',
         desc: 'Abstract lines following the curvature of a hidden digital mass.',
         bg: '#0a0a0a', accent: '#00ffcc', category: 'Abstract', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'abstract', params: { chaos: 1.4, drift: 1.1, resolution: 0.6 }
+        master: 'abstract_flow', params: { chaos: 1.4, drift: 1.1, resolution: 0.6 }
     },
     {
         id: 'digital-sand',
         title: 'Digital Sand',
         desc: 'Granular particles shifting and settling in complex layers.',
         bg: '#050505', accent: '#ffcc00', category: 'Abstract', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'abstract', params: { chaos: 1.6, drift: 0.7, resolution: 1.8 }
+        master: 'abstract_flow', params: { chaos: 1.6, drift: 0.7, resolution: 1.8 }
     },
     // --- 8. GLITCH & DIGITAL NIGHTMARES ---
     {
@@ -745,182 +745,182 @@ export const EXPERIENCES = [
         title: 'Databend Flow',
         desc: 'Pixels sliding down in large blocks.',
         bg: '#050505', accent: '#00ff33', category: 'Glitch', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'glitch', params: { corruption: 1.0, jitter: 0.5, shift: 2.0 }
+        master: 'glitch_data', params: { corruption: 1.0, jitter: 0.5, shift: 2.0 }
     },
     {
         id: 'vhs-tear',
         title: 'VHS Tear',
         desc: 'Tape shift and horizontal flickering of colors.',
         bg: '#0a0a0a', accent: '#ff00ff', category: 'Glitch', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'glitch', params: { corruption: 1.5, jitter: 1.0, shift: 1.5 }
+        master: 'glitch_vhs', params: { corruption: 1.5, jitter: 1.0, shift: 1.5 }
     },
     {
         id: 'pixel-sort',
         title: 'Pixel Sorting',
         desc: 'Bright colors flowing down like a waterfall.',
         bg: '#000000', accent: '#ffffff', category: 'Glitch', thumbId: 'photo-1618005182384-a83a8bd57fbe',
-        master: 'glitch', params: { corruption: 0.8, jitter: 0.2, shift: 3.0 }
+        master: 'glitch_data', params: { corruption: 0.8, jitter: 0.2, shift: 3.0 }
     },
     {
         id: 'ascii-art',
         title: 'ASCII Art',
         desc: 'Transformation of the image into moving letters and symbols.',
         bg: '#000500', accent: '#00ff00', category: 'Glitch', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'glitch', params: { corruption: 0.5, jitter: 0.8, shift: 1.0 }
+        master: 'glitch_matrix', params: { corruption: 0.5, jitter: 0.8, shift: 1.0 }
     },
     {
         id: 'comp-artifact',
         title: 'Artifacts',
         desc: 'Macro blocks exploding into pixelated squares.',
         bg: '#0a0a0a', accent: '#333333', category: 'Glitch', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'glitch', params: { corruption: 2.0, jitter: 1.5, shift: 0.5 }
+        master: 'glitch_corrupt', params: { corruption: 2.0, jitter: 1.5, shift: 0.5 }
     },
     {
         id: 'ram-corruption',
         title: 'RAM Corrupt',
         desc: 'Random symbols chaotically flashing.',
         bg: '#050505', accent: '#ff0000', category: 'Glitch', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'glitch', params: { corruption: 3.0, jitter: 2.0, shift: 0.2 }
+        master: 'glitch_matrix', params: { corruption: 3.0, jitter: 2.0, shift: 0.2 }
     },
     {
         id: 'z-fight',
         title: 'Z-Fighting',
         desc: 'A jarring geometric battle of 3D surfaces.',
         bg: '#000000', accent: '#cccccc', category: 'Glitch', thumbId: 'photo-1635776062127-d379bfcba9f8',
-        master: 'glitch', params: { corruption: 1.2, jitter: 0.7, shift: 2.5 }
+        master: 'glitch_corrupt', params: { corruption: 1.2, jitter: 0.7, shift: 2.5 }
     },
     {
         id: 'matrix-rain',
         title: 'Matrix Rain',
         desc: 'Digital rain of falling characters that deform.',
         bg: '#000000', accent: '#00ff00', category: 'Glitch', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'glitch', params: { corruption: 0.7, jitter: 0.3, shift: 1.8 }
+        master: 'glitch_matrix', params: { corruption: 0.7, jitter: 0.3, shift: 1.8 }
     },
     {
         id: 'screen-tear',
         title: 'Screen Tear',
         desc: 'The illusion of a screen splitting at different frame rates.',
         bg: '#0a0a0a', accent: '#ffffff', category: 'Glitch', thumbId: 'photo-1541701494587-cb58502866ab',
-        master: 'glitch', params: { corruption: 1.8, jitter: 1.2, shift: 1.0 }
+        master: 'glitch_corrupt', params: { corruption: 1.8, jitter: 1.2, shift: 1.0 }
     },
     {
         id: 'bsod-illusion',
         title: 'BSOD Void',
         desc: 'A 3D space emerging from within the blue screen.',
         bg: '#0000ff', accent: '#ffffff', category: 'Glitch', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'glitch', params: { corruption: 2.5, jitter: 0.9, shift: 0.8 }
+        master: 'glitch_corrupt', params: { corruption: 2.5, jitter: 0.9, shift: 0.8 }
     },
     {
         id: 'buffer-over',
         title: 'Buffer Over',
         desc: 'The moment visual memory overflows.',
         bg: '#050505', accent: '#ff5500', category: 'Glitch', thumbId: 'photo-1618005182384-a83a8bd57fbe',
-        master: 'glitch', params: { corruption: 3.5, jitter: 1.8, shift: 0.4 }
+        master: 'glitch_corrupt', params: { corruption: 3.5, jitter: 1.8, shift: 0.4 }
     },
     {
         id: 'noise-shred',
         title: 'Noise Shred',
         desc: 'Reality torn apart by static noise.',
         bg: '#000000', accent: '#666666', category: 'Glitch', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'glitch', params: { corruption: 4.0, jitter: 2.5, shift: 0.1 }
+        master: 'glitch_corrupt', params: { corruption: 4.0, jitter: 2.5, shift: 0.1 }
     },
     {
         id: 'signal-loss',
         title: 'Signal Loss',
         desc: 'A completely out-of-control digital decay.',
         bg: '#0a0a0a', accent: '#ff0000', category: 'Glitch', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'glitch', params: { corruption: 5.0, jitter: 3.0, shift: 0.0 }
+        master: 'glitch_corrupt', params: { corruption: 5.0, jitter: 3.0, shift: 0.0 }
     },
     {
         id: 'screen-tear',
         title: 'Screen Tear',
         desc: 'Violent horizontal shifts in the image structure.',
         bg: '#000000', accent: '#ff0000', category: 'Glitch', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'glitch', params: { corruption: 2.0, jitter: 1.5, shift: 3.0 }
+        master: 'glitch_corrupt', params: { corruption: 2.0, jitter: 1.5, shift: 3.0 }
     },
     {
         id: 'rgb-split',
         title: 'RGB Split',
         desc: 'Total separation of red, green, and blue information channels.',
         bg: '#050505', accent: '#ff3333', category: 'Glitch', thumbId: 'photo-1618005182384-a83a8bd57fbe',
-        master: 'glitch', params: { corruption: 1.5, jitter: 0.8, shift: 2.0 }
+        master: 'glitch_corrupt', params: { corruption: 1.5, jitter: 0.8, shift: 2.0 }
     },
     {
         id: 'data-mosquito',
         title: 'Data Mosquito',
         desc: 'Pixel clusters that swarm and bite at the clean image structure.',
         bg: '#0a0a0a', accent: '#00ff00', category: 'Glitch', thumbId: 'photo-1558591710-4b4a1ae0f04d',
-        master: 'glitch', params: { corruption: 3.0, jitter: 4.0, shift: 0.5 }
+        master: 'glitch_corrupt', params: { corruption: 3.0, jitter: 4.0, shift: 0.5 }
     },
     {
         id: 'vhs-distress',
         title: 'VHS Distress',
         desc: 'Analog degradation artifacts appearing on top of the digital signal.',
         bg: '#000000', accent: '#ffffff', category: 'Glitch', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'glitch', params: { corruption: 1.2, jitter: 2.5, shift: 1.0 }
+        master: 'glitch_vhs', params: { corruption: 1.2, jitter: 2.5, shift: 1.0 }
     },
     {
         id: 'kernel-panic',
         title: 'Kernel Panic',
         desc: 'Simulated system failure with layers of raw code text and red alerts.',
         bg: '#050000', accent: '#ff0000', category: 'Glitch', thumbId: 'photo-1509228468518-180dd4864904',
-        master: 'glitch', params: { corruption: 5.0, jitter: 3.0, shift: 0.2 }
+        master: 'glitch_corrupt', params: { corruption: 5.0, jitter: 3.0, shift: 0.2 }
     },
     {
         id: 'static-void',
         title: 'Static Void',
         desc: 'White noise patterns that contain hidden fractal shapes.',
         bg: '#0a0a0a', accent: '#ffffff', category: 'Glitch', thumbId: 'photo-1541701494587-cb58502866ab',
-        master: 'glitch', params: { corruption: 2.5, jitter: 5.0, shift: 0.1 }
+        master: 'glitch_matrix', params: { corruption: 2.5, jitter: 5.0, shift: 0.1 }
     },
     {
         id: 'interlace-error',
         title: 'Interlace Error',
         desc: 'Scanning lines that clash and overlap in an infinite sequence.',
         bg: '#05050a', accent: '#00ccff', category: 'Glitch', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'glitch', params: { corruption: 1.8, jitter: 1.2, shift: 1.5 }
+        master: 'glitch_vhs', params: { corruption: 1.8, jitter: 1.2, shift: 1.5 }
     },
     {
         id: 'pixel-ghost',
         title: 'Pixel Ghost',
         desc: 'Trailing echoes of previous frames lingering in the void.',
         bg: '#000000', accent: '#cccccc', category: 'Glitch', thumbId: 'photo-1534796636912-3b95b3ab5986',
-        master: 'glitch', params: { corruption: 0.8, jitter: 0.5, shift: 0.4 }
+        master: 'glitch_data', params: { corruption: 0.8, jitter: 0.5, shift: 0.4 }
     },
     {
         id: 'buffer-overrun',
         title: 'Buffer Overrun',
         desc: 'Leaking memory buffers creating random colored blocks.',
         bg: '#0a050a', accent: '#ff00ff', category: 'Glitch', thumbId: 'photo-1563089145-599997674d42',
-        master: 'glitch', params: { corruption: 3.5, jitter: 2.0, shift: 5.0 }
+        master: 'glitch_corrupt', params: { corruption: 3.5, jitter: 2.0, shift: 5.0 }
     },
     {
         id: 'sync-loss',
         title: 'Sync Loss',
         desc: 'The image rolling vertically as the signal loses its timing.',
         bg: '#050505', accent: '#ffcc00', category: 'Glitch', thumbId: 'photo-1502134249126-9f3755a50d78',
-        master: 'glitch', params: { corruption: 2.2, jitter: 0.3, shift: 10.0 }
+        master: 'glitch_vhs', params: { corruption: 2.2, jitter: 0.3, shift: 10.0 }
     },
     {
         id: 'corrupt-texture',
         title: 'Corrupt Texture',
         desc: 'Surface materials breaking down into raw binary information.',
         bg: '#000000', accent: '#999999', category: 'Glitch', thumbId: 'photo-1558591710-4b4a1ae0f04d',
-        master: 'glitch', params: { corruption: 4.0, jitter: 1.1, shift: 0.8 }
+        master: 'glitch_corrupt', params: { corruption: 4.0, jitter: 1.1, shift: 0.8 }
     },
     {
         id: 'mosaic-shatter',
         title: 'Mosaic Shatter',
         desc: 'The image breaking apart into large cubic pixels that drift away.',
         bg: '#0a0a0a', accent: '#ffffff', category: 'Glitch', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'glitch', params: { corruption: 1.6, jitter: 2.2, shift: 4.0 }
+        master: 'glitch_data', params: { corruption: 1.6, jitter: 2.2, shift: 4.0 }
     },
     {
         id: 'glitch-helix',
         title: 'Glitch Helix',
         desc: 'A spiraling sequence of digital corruption and noise.',
         bg: '#050005', accent: '#cc00ff', category: 'Glitch', thumbId: 'photo-1464802686167-b939a67a0621',
-        master: 'glitch', params: { corruption: 2.8, jitter: 1.8, shift: 1.2 }
+        master: 'glitch_corrupt', params: { corruption: 2.8, jitter: 1.8, shift: 1.2 }
     },
 
     // --- 9. MYSTERIOUS & GEOMETRIC SYMBOLISM ---
@@ -929,91 +929,91 @@ export const EXPERIENCES = [
         title: 'Sacred Symbols',
         desc: 'Flower of life and other ancient patterns emerging from the pixel dust.',
         bg: '#000000', accent: '#ffcc00', category: 'Geometry', thumbId: 'photo-1511367461989-f85a21fda167',
-        master: 'geometry', params: { symmetry: 6.0, complexity: 1.5, pulse: 0.2 }
+        master: 'geometry_sacred', params: { symmetry: 6.0, complexity: 1.5, pulse: 0.2 }
     },
     {
         id: 'monolith-grid',
         title: 'Monolith Grid',
         desc: 'Silent, towering blocks arranged in a perfect non-human sequence.',
         bg: '#050505', accent: '#ffffff', category: 'Geometry', thumbId: 'photo-1478760329108-5c3ed9d495a0',
-        master: 'geometry', params: { symmetry: 4.0, complexity: 0.8, pulse: 0.1 }
+        master: 'geometry_grid', params: { symmetry: 4.0, complexity: 0.8, pulse: 0.1 }
     },
     {
         id: 'vector-temple',
         title: 'Vector Temple',
         desc: 'Wireframe structures that feel like an architect\'s dream of a digital god.',
         bg: '#0a0a14', accent: '#00ccff', category: 'Geometry', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'geometry', params: { symmetry: 8.0, complexity: 2.0, pulse: 0.3 }
+        master: 'geometry_orbital', params: { symmetry: 8.0, complexity: 2.0, pulse: 0.3 }
     },
     {
         id: 'orbital-icons',
         title: 'Orbital Icons',
         desc: 'Floating symbols rotating around a central source of digital energy.',
         bg: '#000000', accent: '#7b61ff', category: 'Geometry', thumbId: 'photo-1464802686167-b939a67a0621',
-        master: 'geometry', params: { symmetry: 10.0, complexity: 1.2, pulse: 0.5 }
+        master: 'geometry_orbital', params: { symmetry: 10.0, complexity: 1.2, pulse: 0.5 }
     },
     {
         id: 'zen-lines',
         title: 'Zen Lines',
         desc: 'Perfectly straight lines dancing into complex but peaceful arrangements.',
         bg: '#050505', accent: '#ffffff', category: 'Geometry', thumbId: 'photo-1544333346-64e4fe182b60',
-        master: 'geometry', params: { symmetry: 2.0, complexity: 0.5, pulse: 0.1 }
+        master: 'geometry_grid', params: { symmetry: 2.0, complexity: 0.5, pulse: 0.1 }
     },
     {
         id: 'recursive-sigils',
         title: 'Recursive Sigils',
         desc: 'Ancient marks that contain smaller versions of themselves infinitely.',
         bg: '#000000', accent: '#ff0000', category: 'Geometry', thumbId: 'photo-1558591710-4b4a1ae0f04d',
-        master: 'geometry', params: { symmetry: 5.0, complexity: 3.0, pulse: 0.4 }
+        master: 'geometry_mandala', params: { symmetry: 5.0, complexity: 3.0, pulse: 0.4 }
     },
     {
         id: 'crystal-lattice',
         title: 'Crystal Lattice',
         desc: 'The microscopic structure of a digital diamond shifting in the light.',
         bg: '#0a140a', accent: '#00ffcc', category: 'Geometry', thumbId: 'photo-1512168221867-04a545abbbc7',
-        master: 'geometry', params: { symmetry: 7.0, complexity: 1.8, pulse: 0.2 }
+        master: 'geometry_sacred', params: { symmetry: 7.0, complexity: 1.8, pulse: 0.2 }
     },
     {
         id: 'golden-ratio',
         title: 'Aurea Spiral',
         desc: 'The perfect logarithmic spiral of nature translated into glowing code.',
         bg: '#100500', accent: '#ffcc00', category: 'Geometry', thumbId: 'photo-1462331940025-496dfbfc7564',
-        master: 'geometry', params: { symmetry: 1.618, complexity: 1.0, pulse: 0.3 }
+        master: 'geometry_sacred', params: { symmetry: 1.618, complexity: 1.0, pulse: 0.3 }
     },
     {
         id: 'poly-pulse',
         title: 'Poly Pulse',
         desc: 'Geometric primitive shapes expanding and contracting at safe frequencies.',
         bg: '#050505', accent: '#ff00ff', category: 'Geometry', thumbId: 'photo-1550684848-fac1c5b4e853',
-        master: 'geometry', params: { symmetry: 3.0, complexity: 0.6, pulse: 0.8 }
+        master: 'geometry_mandala', params: { symmetry: 3.0, complexity: 0.6, pulse: 0.8 }
     },
     {
         id: 'cipher-grid',
         title: 'Cipher Grid',
         desc: 'A wall of rotating symbols that almost looks like a readable message.',
         bg: '#000000', accent: '#ffffff', category: 'Geometry', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'geometry', params: { symmetry: 12.0, complexity: 2.5, pulse: 0.1 }
+        master: 'geometry_grid', params: { symmetry: 12.0, complexity: 2.5, pulse: 0.1 }
     },
     {
         id: 'mystic-node',
         title: 'Mystic Node',
         desc: 'The central point of a complex network connecting all digital souls.',
         bg: '#050005', accent: '#cc00ff', category: 'Geometry', thumbId: 'photo-1518133910546-b6c2fb7d79e3',
-        master: 'geometry', params: { symmetry: 9.0, complexity: 1.4, pulse: 0.6 }
+        master: 'geometry_mandala', params: { symmetry: 9.0, complexity: 1.4, pulse: 0.6 }
     },
     {
         id: 'geometric-echo',
         title: 'Geom Echo',
         desc: 'Shapes that leave vibrating geometric trails as they move.',
         bg: '#000000', accent: '#00ffff', category: 'Geometry', thumbId: 'photo-1550684848-fac1c5b4e853',
-        master: 'geometry', params: { symmetry: 4.0, complexity: 1.0, pulse: 0.3 }
+        master: 'geometry_orbital', params: { symmetry: 4.0, complexity: 1.0, pulse: 0.3 }
     },
     {
         id: 'origin-point',
         title: 'Origin Point',
         desc: 'The single source from which all geometric complexity is born.',
         bg: '#050505', accent: '#ffffff', category: 'Geometry', thumbId: 'photo-1464802686167-b939a67a0621',
-        master: 'geometry', params: { symmetry: 1.0, complexity: 0.2, pulse: 0.1 }
+        master: 'geometry_orbital', params: { symmetry: 1.0, complexity: 0.2, pulse: 0.1 }
     },
     // --- 10. MICRO & MACRO COSMOS ---
     {
@@ -1021,90 +1021,90 @@ export const EXPERIENCES = [
         title: 'Star Nursery',
         desc: 'Birth of stars in a dense cloud of glowing space dust.',
         bg: '#050505', accent: '#4facfe', category: 'Cosmic', thumbId: 'photo-1462331940025-496dfbfc7564',
-        master: 'cosmic', params: { zoom: 0.5, density: 2.0, glow: 1.5 }
+        master: 'cosmic_stellar', params: { zoom: 0.5, density: 2.0, glow: 1.5 }
     },
     {
         id: 'supernova-sys',
         title: 'Supernova',
         desc: 'The final, beautiful explosion of a digital star across the void.',
         bg: '#000000', accent: '#ff9900', category: 'Cosmic', thumbId: 'photo-1634128221889-82ed6efebfc3',
-        master: 'cosmic', params: { zoom: 1.2, density: 3.0, glow: 4.0 }
+        master: 'cosmic_explosion', params: { zoom: 1.2, density: 3.0, glow: 4.0 }
     },
     {
         id: 'event-horizon-macro',
         title: 'Macro Horizon',
         desc: 'Extreme close-up of light bending around a black hole.',
         bg: '#100500', accent: '#ff6600', category: 'Cosmic', thumbId: 'photo-1506318137071-a8e063b4bcc0',
-        master: 'cosmic', params: { zoom: 3.0, density: 0.8, glow: 2.0 }
+        master: 'cosmic_pulse', params: { zoom: 3.0, density: 0.8, glow: 2.0 }
     },
     {
         id: 'galactic-center',
         title: 'Galaxy Core',
         desc: 'Millions of stars rotating around a supermassive source of light.',
         bg: '#000000', accent: '#7b61ff', category: 'Cosmic', thumbId: 'photo-1464802686167-b939a67a0621',
-        master: 'cosmic', params: { zoom: 0.1, density: 5.0, glow: 1.2 }
+        master: 'cosmic_pulse', params: { zoom: 0.1, density: 5.0, glow: 1.2 }
     },
     {
         id: 'atomic-void',
         title: 'Atomic Void',
         desc: 'The microscopic dance of pixels functioning as quantum particles.',
         bg: '#050505', accent: '#ffffff', category: 'Cosmic', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'cosmic', params: { zoom: 10.0, density: 1.5, glow: 0.5 }
+        master: 'cosmic_void', params: { zoom: 10.0, density: 1.5, glow: 0.5 }
     },
     {
         id: 'quasar-beam',
         title: 'Quasar Beam',
         desc: 'Immense energy jets shooting out from the center of a galaxy.',
         bg: '#000000', accent: '#00ccff', category: 'Cosmic', thumbId: 'photo-1534796636912-3b95b3ab5986',
-        master: 'cosmic', params: { zoom: 0.8, density: 1.2, glow: 3.0 }
+        master: 'cosmic_explosion', params: { zoom: 0.8, density: 1.2, glow: 3.0 }
     },
     {
         id: 'nebula-gas',
         title: 'Nebula Gas',
         desc: 'Vast curtains of hydrogen and helium glowing in the dark.',
         bg: '#0a0a0a', accent: '#ff00ff', category: 'Cosmic', thumbId: 'photo-1618005182384-a83a8bd57fbe',
-        master: 'cosmic', params: { zoom: 0.3, density: 0.5, glow: 0.8 }
+        master: 'cosmic_stellar', params: { zoom: 0.3, density: 0.5, glow: 0.8 }
     },
     {
         id: 'solar-flare',
         title: 'Solar Flare',
         desc: 'Massive loops of fire and light emerging from a digital sun.',
         bg: '#100000', accent: '#ff3300', category: 'Cosmic', thumbId: 'photo-1502134249126-9f3755a50d78',
-        master: 'cosmic', params: { zoom: 5.0, density: 2.5, glow: 1.8 }
+        master: 'cosmic_explosion', params: { zoom: 5.0, density: 2.5, glow: 1.8 }
     },
     {
         id: 'dark-matter-flow',
         title: 'Matter Flow',
         desc: 'The invisible web that connects all structures in the universe.',
         bg: '#000000', accent: '#333333', category: 'Cosmic', thumbId: 'photo-1550745165-9bc0b252728f',
-        master: 'cosmic', params: { zoom: 0.2, density: 4.0, glow: 0.1 }
+        master: 'cosmic_void', params: { zoom: 0.2, density: 4.0, glow: 0.1 }
     },
     {
         id: 'pulsar-rhythm',
         title: 'Pulsar Rhythm',
         desc: 'The high-frequency beating of a neutron star caught on camera.',
         bg: '#05050a', accent: '#ffffff', category: 'Cosmic', thumbId: 'photo-1550537687-c91072c4792d',
-        master: 'cosmic', params: { zoom: 1.5, density: 1.0, glow: 2.5 }
+        master: 'cosmic_pulse', params: { zoom: 1.5, density: 1.0, glow: 2.5 }
     },
     {
         id: 'comet-tail',
         title: 'Comet Tail',
         desc: 'A frozen ice block leaving a glowing trail of dust and gas.',
         bg: '#000000', accent: '#00f2fe', category: 'Cosmic', thumbId: 'photo-1551033406-611cf9a28f67',
-        master: 'cosmic', params: { zoom: 2.0, density: 0.4, glow: 1.2 }
+        master: 'cosmic_pulse', params: { zoom: 2.0, density: 0.4, glow: 1.2 }
     },
     {
         id: 'binary-stars',
         title: 'Binary Dance',
         desc: 'Two stars locked in a gravity-defying digital embrace.',
         bg: '#050505', accent: '#ffcc00', category: 'Cosmic', thumbId: 'photo-1464802686167-b939a67a0621',
-        master: 'cosmic', params: { zoom: 0.7, density: 2.0, glow: 0.9 }
+        master: 'cosmic_stellar', params: { zoom: 0.7, density: 2.0, glow: 0.9 }
     },
     {
         id: 'void-horizon',
         title: 'Final Horizon',
         desc: 'The very edge of the observable digital universe.',
         bg: '#000000', accent: '#ffffff', category: 'Cosmic', thumbId: 'photo-1510511459019-5deeee712163',
-        master: 'cosmic', params: { zoom: 0.1, density: 0.1, glow: 0.1 }
+        master: 'cosmic_void', params: { zoom: 0.1, density: 0.1, glow: 0.1 }
     },
 ];
