@@ -7,8 +7,8 @@ gsap.registerPlugin(ScrollTrigger);
 const protocols = [
     {
         step: '01',
-        title: 'Kinetik Kum Fırtınaları',
-        desc: 'Bilinçaltınızın haritasını çıkaran, sürekli dönüşen dijital parçacık sistemleri.',
+        title: 'Kinetic Sand Storms',
+        desc: 'Constantly transforming digital particle systems that map your subconscious.',
         Visual: () => (
             <div className="absolute inset-0 flex items-center justify-center opacity-40 mix-blend-screen">
                 <svg viewBox="0 0 200 200" className="w-[80vw] md:w-[60vw] h-auto animate-[spin_60s_linear_infinite]">
@@ -38,8 +38,8 @@ const protocols = [
     },
     {
         step: '02',
-        title: 'Sese Duyarlı Spektrum',
-        desc: 'Akustik rezonans ile beyin dalgalarınızı senkronize eden, lazer tarama ritimleri.',
+        title: 'Sonic Spectrum Sync',
+        desc: 'Laser scanning rhythms that synchronize your brainwaves with acoustic resonance.',
         Visual: () => (
             <div className="absolute inset-0 flex items-center justify-center opacity-50 overflow-hidden">
                 <div className="relative w-full h-[60vh] flex flex-col justify-around px-10">
@@ -66,44 +66,20 @@ const protocols = [
     },
     {
         step: '03',
-        title: 'Neon Simülasyonu',
-        desc: 'Transandantal duruma geçişinizi temsil eden, organik, nefes alan sıvı ışık formları.',
+        title: 'Neon Fluid Genesis',
+        desc: 'Organic, breathing liquid light forms representing your transition to a transcendental state.',
         Visual: () => (
-            <div className="absolute inset-0 flex items-center justify-center opacity-60">
-                <svg viewBox="0 0 100 100" className="w-[120vw] h-auto md:w-[80vw]">
-                    <path
-                        fill="none"
-                        stroke="#7B61FF"
-                        strokeWidth="0.2"
-                        className="animate-pulse"
-                        d="M0,50 C20,40 30,80 50,50 C70,20 80,60 100,50"
-                        style={{ filter: 'drop-shadow(0 0 5px #7B61FF)' }}
-                    >
-                        <animate attributeName="d"
-                            dur="4s"
-                            repeatCount="indefinite"
-                            values="
-                M0,50 C20,40 30,80 50,50 C70,20 80,60 100,50;
-                M0,50 C20,60 30,20 50,50 C70,80 80,40 100,50;
-                M0,50 C20,40 30,80 50,50 C70,20 80,60 100,50"
-                        />
-                    </path>
-                    <path
-                        fill="none"
-                        stroke="#F0EFF4"
-                        strokeWidth="0.1"
-                        opacity="0.5"
-                        d="M0,50 C20,60 30,20 50,50 C70,80 80,40 100,50"
-                    >
-                        <animate attributeName="d"
-                            dur="5s"
-                            repeatCount="indefinite"
-                            values="
-                M0,50 C20,60 30,20 50,50 C70,80 80,40 100,50;
-                M0,50 C20,40 30,80 50,50 C70,20 80,60 100,50;
-                M0,50 C20,60 30,20 50,50 C70,80 80,40 100,50"
-                        />
-                    </path>
+            <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                <svg viewBox="0 0 100 100" className="w-[70vw] h-auto filter blur-2xl animate-pulse">
+                    <circle cx="50" cy="50" r="30" fill="url(#grad2)">
+                        <animate attributeName="r" values="25;35;25" dur="10s" repeatCount="indefinite" />
+                    </circle>
+                    <defs>
+                        <radialGradient id="grad2" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#7B61FF" stopOpacity="0.8" />
+                            <stop offset="100%" stopColor="#0A0A14" stopOpacity="0" />
+                        </radialGradient>
+                    </defs>
                 </svg>
             </div>
         )

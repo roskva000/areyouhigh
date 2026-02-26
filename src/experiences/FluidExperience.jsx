@@ -1,103 +1,219 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ExperienceLobby from '../components/ExperienceLobby';
+
+const VERTEX_SHADER = `
+  attribute vec2 position;
+  varying vec2 vUv;
+  void main() {
+    vUv = position * 0.5 + 0.5;
+    gl_Position = vec4(position, 0.0, 1.0);
+  }
+`;
+
+const FRAGMENT_SHADER = `
+  precision highp float;
+  uniform float u_time;
+  uniform vec2 u_resolution;
+  uniform vec3 u_color1;
+  uniform vec3 u_color2;
+  uniform vec3 u_color3;
+  uniform float u_speed;
+  uniform float u_intensity;
+  varying vec2 vUv;
+
+  // Simple Curl Noise for fluid-like motion
+  vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+  float snoise(vec2 v) {
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+    vec2 i  = floor(v + dot(v, C.yy));
+    vec2 x0 = v - i + dot(i, C.xx);
+    vec2 i1;
+    i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz;
+    x12.xy -= i1;
+    i = mod289(i);
+    vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+    vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+    m = m*m;
+    m = m*m;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0;
+    vec3 h = abs(x) - 0.5;
+    vec3 ox = floor(x + 0.5);
+    vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+    vec3 g;
+    g.x = a0.x * x0.x + h.x * x0.y;
+    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+  }
+
+  vec3 palette(float t) {
+    t = fract(t + u_time * 0.01);
+    if (t < 0.33) return mix(u_color1, u_color2, t * 3.0);
+    if (t < 0.66) return mix(u_color2, u_color3, (t - 0.33) * 3.0);
+    return mix(u_color3, u_color1, (t - 0.66) * 3.0);
+  }
+
+  void main() {
+    vec2 uv = vUv;
+    float time = u_time * 0.2 * u_speed;
+    
+    // Multi-layered noise for fluid density
+    float n1 = snoise(uv * 3.0 + time);
+    float n2 = snoise(uv * 6.0 - time * 0.5);
+    float n3 = snoise(uv * 12.0 + time * 0.2);
+    
+    float density = n1 * 0.5 + n2 * 0.25 + n3 * 0.125;
+    density = smoothstep(-0.2, 0.5, density * u_intensity);
+    
+    // Warp the coordinates for a "mixing" effect
+    vec2 warp = vec2(snoise(uv * 4.0 + time), snoise(uv * 4.0 - time));
+    vec3 col = palette(density + length(warp) * 0.2);
+    
+    col *= density;
+    col += (1.0 - density) * 0.05 * u_color1; // Ambient glow
+    
+    col *= smoothstep(1.5, 0.4, length(uv - 0.5) * 2.0); // Vignette
+    
+    gl_FragColor = vec4(col, 1.0);
+  }
+`;
 
 export default function FluidExperience() {
     const canvasRef = useRef(null);
     const navigate = useNavigate();
+    const [config, setConfig] = useState(null);
 
     useEffect(() => {
+        if (!config) return;
+
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
+        const gl = canvas.getContext('webgl');
+        if (!gl) return;
+
         let width, height;
         let animationFrameId;
 
-        const resize = () => {
+        const createShader = (gl, type, source) => {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                console.error(gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+            return shader;
+        };
+
+        const program = gl.createProgram();
+        const vs = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
+        const fs = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER);
+        gl.attachShader(program, vs);
+        gl.attachShader(program, fs);
+        gl.linkProgram(program);
+        gl.useProgram(program);
+
+        const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+        const pos = gl.getAttribLocation(program, 'position');
+        gl.enableVertexAttribArray(pos);
+        gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+
+        const uTime = gl.getUniformLocation(program, 'u_time');
+        const uRes = gl.getUniformLocation(program, 'u_resolution');
+        const uSpeed = gl.getUniformLocation(program, 'u_speed');
+        const uIntensity = gl.getUniformLocation(program, 'u_intensity');
+        const uCol1 = gl.getUniformLocation(program, 'u_color1');
+        const uCol2 = gl.getUniformLocation(program, 'u_color2');
+        const uCol3 = gl.getUniformLocation(program, 'u_color3');
+
+        const hexToRgb = (hex) => {
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            return [r, g, b];
+        };
+
+        const onResize = () => {
             width = window.innerWidth;
             height = window.innerHeight;
             canvas.width = width;
             canvas.height = height;
+            gl.viewport(0, 0, width, height);
         };
-        window.addEventListener('resize', resize);
-        resize();
+        window.addEventListener('resize', onResize);
+        onResize();
 
-        // Very simple 2D particle fluid simulation proxy
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.vx = (Math.random() - 0.5) * 5;
-                this.vy = (Math.random() - 0.5) * 5;
-                this.size = Math.random() * 8 + 2;
-                this.life = 1;
-                this.color = `hsla(${180 + Math.random() * 60}, 100%, 50%, `;
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.life -= 0.01;
-                this.size *= 0.98;
-            }
-            draw(ctx) {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color + this.life + ')';
-                ctx.fill();
-            }
-        }
+        let lastTimestamp = 0;
+        let shaderTime = 0;
 
-        let particles = [];
+        const render = (timestamp) => {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const deltaTime = (timestamp - lastTimestamp) * 0.001;
+            lastTimestamp = timestamp;
 
-        const handleMouseMove = (e) => {
-            for (let i = 0; i < 5; i++) {
-                particles.push(new Particle(e.clientX, e.clientY));
-            }
+            shaderTime += deltaTime;
+
+            gl.uniform1f(uTime, shaderTime);
+            gl.uniform2f(uRes, width, height);
+            gl.uniform1f(uSpeed, config.speed);
+            gl.uniform1f(uIntensity, config.intensity);
+
+            const c1 = hexToRgb(config.palette.colors[0]);
+            const c2 = hexToRgb(config.palette.colors[1]);
+            const c3 = hexToRgb(config.palette.colors[2]);
+
+            gl.uniform3f(uCol1, c1[0], c1[1], c1[2]);
+            gl.uniform3f(uCol2, c2[0], c2[1], c2[2]);
+            gl.uniform3f(uCol3, c3[0], c3[1], c3[2]);
+
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
+            animationFrameId = requestAnimationFrame(render);
         };
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('touchmove', (e) => {
-            for (let i = 0; i < 5; i++) {
-                particles.push(new Particle(e.touches[0].clientX, e.touches[0].clientY));
-            }
-        });
-
-        const draw = () => {
-            ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
-            ctx.fillRect(0, 0, width, height);
-
-            // Add ambient particles if none
-            if (Math.random() > 0.8) {
-                particles.push(new Particle(width / 2 + (Math.random() - 0.5) * width * 0.5, height / 2 + (Math.random() - 0.5) * height * 0.5));
-            }
-
-            particles = particles.filter(p => p.life > 0.05);
-            particles.forEach(p => {
-                p.update();
-                p.draw(ctx);
-            });
-
-            animationFrameId = requestAnimationFrame(draw);
-        };
-
-        draw();
+        animationFrameId = requestAnimationFrame(render);
 
         return () => {
-            window.removeEventListener('resize', resize);
-            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('resize', onResize);
             cancelAnimationFrame(animationFrameId);
         };
-    }, []);
+    }, [config]);
 
     return (
-        <div className="relative w-screen h-[100dvh] overflow-hidden bg-[#0A0A14] selection:bg-transparent">
-            <button
-                onClick={() => navigate('/')}
-                className="absolute top-6 left-6 z-50 font-mono text-xs text-white/50 hover:text-white transition-colors uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md"
-            >
-                &larr; Return to Portal
-            </button>
-            <div className="absolute top-6 right-6 z-50 pointer-events-none">
-                <span className="font-mono text-xs text-cyan-400/50 uppercase tracking-widest">Move cursor to spawn fluid</span>
-            </div>
-            <canvas ref={canvasRef} className="w-full h-full block touch-none filter blur-[4px] contrast-[1.5]"></canvas>
+        <div className="relative w-screen h-[100dvh] overflow-hidden bg-black selection:bg-transparent text-white">
+            {!config ? (
+                <ExperienceLobby
+                    title="Liquid Plasma"
+                    description="Lose yourself in the chaotic flow of digital ink. A high-fidelity GPU simulation of bioluminescent fluids."
+                    onLaunch={(settings) => setConfig(settings)}
+                    onBack={() => navigate('/')}
+                />
+            ) : (
+                <>
+                    <button
+                        onClick={() => setConfig(null)}
+                        className="absolute top-6 left-6 z-50 font-mono text-xs text-white/50 hover:text-white transition-colors uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md"
+                    >
+                        &larr; Return to Lobby
+                    </button>
+                    <canvas ref={canvasRef} className="w-full h-full block filter blur-[1px] contrast-[1.4] saturate-[1.2]"></canvas>
+
+                    <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.05] contrast-150 brightness-150">
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <filter id="noiseFilter">
+                                <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+                            </filter>
+                            <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+                        </svg>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Philosophy from '../components/Philosophy';
 import Experiences from '../components/Experiences';
+import Protocol from '../components/Protocol';
 import Footer from '../components/Footer';
 
 export default function Home() {

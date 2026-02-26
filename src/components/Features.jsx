@@ -4,9 +4,9 @@ import gsap from 'gsap';
 // --- Card 1: Diagnostic Shuffler ---
 function DiagnosticShuffler() {
     const [cards, setCards] = useState([
-        { id: 1, title: 'Sürekli Evrim', color: 'bg-[#151520]' },
-        { id: 2, title: 'Matematiksel Rüyalar', color: 'bg-[#1a1a2e]' },
-        { id: 3, title: 'Algoritmik Trans', color: 'bg-[#251e3e]' },
+        { id: 1, title: 'Constant Evolution', color: 'bg-[#151520]' },
+        { id: 2, title: 'Mathematical Dreams', color: 'bg-[#1a1a2e]' },
+        { id: 3, title: 'Algorithmic Trance', color: 'bg-[#251e3e]' },
     ]);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ function DiagnosticShuffler() {
                         </div>
                         <div>
                             <h3 className="font-sans font-bold text-lg text-text">{card.title}</h3>
-                            <p className="font-mono text-xs text-text/50 mt-2">Otonom Fraktal Motoru</p>
+                            <p className="font-mono text-xs text-text/50 mt-2">Autonomous Fractal Engine</p>
                         </div>
                     </div>
                 );
@@ -92,7 +92,7 @@ function TelemetryTypewriter() {
     return (
         <div className="h-64 w-full bg-[#151520] rounded-[2rem] border border-white/5 p-6 flex flex-col relative overflow-hidden group">
             <div className="flex justify-between items-center mb-6">
-                <h3 className="font-sans font-bold text-lg text-text">Nöro-Akustik Dinamikler</h3>
+                <h3 className="font-sans font-bold text-lg text-text">Neuro-Acoustic Dynamics</h3>
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
                     <span className="font-mono text-xs text-red-500 uppercase tracking-widest">Live Feed</span>
@@ -142,7 +142,7 @@ function CursorScheduler() {
 
     return (
         <div ref={containerRef} className="h-64 w-full bg-[#151520] rounded-[2rem] border border-white/5 p-6 flex flex-col relative overflow-hidden">
-            <h3 className="font-sans font-bold text-lg text-text mb-2">Boyutsal Tüneller</h3>
+            <h3 className="font-sans font-bold text-lg text-text mb-2">Dimensional Tunnels</h3>
             <p className="font-mono text-xs text-text/50 mb-6">Program Sequence</p>
 
             <div className="flex justify-between items-center mb-8 relative z-10">

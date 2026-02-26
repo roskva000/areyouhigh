@@ -3,50 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import ExperienceLobby from '../components/ExperienceLobby';
 
 const VERTEX_SHADER = `
-  attribute vec3 position;
-  attribute float a_id;
-  uniform float u_time;
-  uniform vec2 u_resolution;
-  uniform float u_speed;
-  uniform float u_intensity;
-  varying float v_dist;
-
-  mat2 rot(float a) {
-    float s = sin(a), c = cos(a);
-    return mat2(c, -s, s, c);
-  }
-
+  attribute vec2 position;
   void main() {
-    vec3 p = position;
-    float t = u_time * 0.2 * u_speed;
-    
-    // Animate nodes in 3D
-    p.x += sin(t + a_id * 1.5) * 0.5 * u_intensity;
-    p.y += cos(t * 1.2 + a_id * 2.0) * 0.5 * u_intensity;
-    p.z += sin(t * 0.8 + a_id * 3.0) * 0.5 * u_intensity;
-
-    // Rotation
-    p.xy *= rot(t * 0.1);
-    p.xz *= rot(t * 0.05);
-
-    // Project
-    float perspective = 1.2 / (1.5 + p.z);
-    vec2 pos = p.xy * perspective;
-    pos.x *= u_resolution.y / u_resolution.x;
-
-    gl_Position = vec4(pos, 0.0, 1.0);
-    gl_PointSize = (3.0 * perspective) * u_intensity;
-    v_dist = p.z;
+    gl_Position = vec4(position, 0.0, 1.0);
   }
 `;
 
 const FRAGMENT_SHADER = `
   precision highp float;
+  uniform float u_time;
+  uniform vec2 u_resolution;
   uniform vec3 u_color1;
   uniform vec3 u_color2;
   uniform vec3 u_color3;
-  uniform float u_time;
-  varying float v_dist;
+  uniform float u_speed;
+  uniform float u_intensity;
+
+  vec2 c_mul(vec2 a, vec2 b) {
+    return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
+  }
 
   vec3 palette(float t) {
     t = fract(t + u_time * 0.02);
@@ -55,18 +30,70 @@ const FRAGMENT_SHADER = `
     return mix(u_color3, u_color1, (t - 0.66) * 3.0);
   }
 
+  vec3 get_mandelbrot_color(vec2 uv, float zoom) {
+    vec2 target = vec2(-0.743643887, 0.131825904);
+    vec2 c = uv * zoom + target;
+
+    vec2 z = vec2(0.0);
+    float iterations = 0.0;
+    const float max_iters = 150.0;
+    
+    for (float i = 0.0; i < max_iters; i++) {
+        z = c_mul(z, z) + c;
+        if (dot(z, z) > 128.0) break;
+        iterations++;
+    }
+    
+    if (iterations == max_iters) return vec3(0.0);
+
+    float smooth_it = iterations - log2(max(1.0, log2(dot(z,z)))) + 4.0;
+    vec3 col = palette(smooth_it * 0.02 * u_intensity + u_time * 0.05);
+    
+    // High-frequency details/veins
+    float veins = sin(smooth_it * 0.5 * u_intensity - u_time) * 0.5 + 0.5;
+    col += veins * 0.15 * palette(smooth_it * 0.1);
+
+    return col;
+  }
+
   void main() {
-    float r = length(gl_PointCoord - 0.5);
-    if (r > 0.5) discard;
+    vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.y, u_resolution.x);
     
-    vec3 col = palette(v_dist * 0.2 + 0.5);
-    float alpha = smoothstep(0.5, 0.0, r) * (1.0 - smoothstep(1.0, 2.0, v_dist + 1.5));
+    // Slight swirl rotation over time
+    float angle = u_time * 0.05 * u_speed;
+    float s = sin(angle), c = cos(angle);
+    uv *= mat2(c, -s, s, c);
+
+    // Depth distortion
+    float r = length(uv);
+    uv *= (1.0 + r * r * 0.2 * u_intensity); 
+
+    float time = u_time * 0.2 * u_speed;
+
+    // SEAMLESS ZOOM
+    float cycle = 4.0;
+    float t1 = mod(time, cycle);
+    float t2 = mod(time + cycle * 0.5, cycle);
     
-    gl_FragColor = vec4(col, alpha);
+    float zoom1 = exp(-2.0 - t1 * 3.5);
+    float zoom2 = exp(-2.0 - t2 * 3.5);
+    
+    float w = abs(t1 - cycle * 0.5) / (cycle * 0.5);
+    w = smoothstep(0.0, 1.0, w);
+    
+    vec3 col1 = get_mandelbrot_color(uv, zoom1);
+    vec3 col2 = get_mandelbrot_color(uv, zoom2);
+    
+    vec3 col = mix(col1, col2, w);
+
+    col *= smoothstep(1.8, 0.4, length(uv)); // Vignette
+    col = pow(col, vec3(0.85)); // Contrast
+    
+    gl_FragColor = vec4(col, 1.0);
   }
 `;
 
-export default function PlexusExperience() {
+export default function AbyssExperience() {
     const canvasRef = useRef(null);
     const navigate = useNavigate();
     const [config, setConfig] = useState(null);
@@ -77,9 +104,6 @@ export default function PlexusExperience() {
         const canvas = canvasRef.current;
         const gl = canvas.getContext('webgl');
         if (!gl) return;
-
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
         let width, height;
         let animationFrameId;
@@ -104,29 +128,14 @@ export default function PlexusExperience() {
         gl.linkProgram(program);
         gl.useProgram(program);
 
-        const NUM_NODES = 1200;
-        const positions = new Float32Array(NUM_NODES * 3);
-        const ids = new Float32Array(NUM_NODES);
-        for (let i = 0; i < NUM_NODES; i++) {
-            positions[i * 3] = (Math.random() - 0.5) * 2;
-            positions[i * 3 + 1] = (Math.random() - 0.5) * 2;
-            positions[i * 3 + 2] = (Math.random() - 0.5) * 2;
-            ids[i] = i;
-        }
+        const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
-        const posBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-        const aPos = gl.getAttribLocation(program, 'position');
-        gl.enableVertexAttribArray(aPos);
-        gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, 0, 0);
-
-        const idBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, idBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, ids, gl.STATIC_DRAW);
-        const aId = gl.getAttribLocation(program, 'a_id');
-        gl.enableVertexAttribArray(aId);
-        gl.vertexAttribPointer(aId, 1, gl.FLOAT, false, 0, 0);
+        const pos = gl.getAttribLocation(program, 'position');
+        gl.enableVertexAttribArray(pos);
+        gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
 
         const uTime = gl.getUniformLocation(program, 'u_time');
         const uRes = gl.getUniformLocation(program, 'u_resolution');
@@ -136,6 +145,7 @@ export default function PlexusExperience() {
         const uCol2 = gl.getUniformLocation(program, 'u_color2');
         const uCol3 = gl.getUniformLocation(program, 'u_color3');
 
+        // Hex to RGB
         const hexToRgb = (hex) => {
             const r = parseInt(hex.slice(1, 3), 16) / 255;
             const g = parseInt(hex.slice(3, 5), 16) / 255;
@@ -163,7 +173,6 @@ export default function PlexusExperience() {
 
             shaderTime += deltaTime;
 
-            gl.clear(gl.COLOR_BUFFER_BIT);
             gl.uniform1f(uTime, shaderTime);
             gl.uniform2f(uRes, width, height);
             gl.uniform1f(uSpeed, config.speed);
@@ -177,7 +186,7 @@ export default function PlexusExperience() {
             gl.uniform3f(uCol2, c2[0], c2[1], c2[2]);
             gl.uniform3f(uCol3, c3[0], c3[1], c3[2]);
 
-            gl.drawArrays(gl.POINTS, 0, NUM_NODES);
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
             animationFrameId = requestAnimationFrame(render);
         };
         animationFrameId = requestAnimationFrame(render);
@@ -192,8 +201,8 @@ export default function PlexusExperience() {
         <div className="relative w-screen h-[100dvh] overflow-hidden bg-black selection:bg-transparent text-white">
             {!config ? (
                 <ExperienceLobby
-                    title="Neural Plexus"
-                    description="Dive into the sparkling structure of a vast informational network. A high-density 3D node field."
+                    title="The Abyss"
+                    description="Dive into the infinite depth of the Mandelbrot set. A journey through mathematical beauty and crystalline complexity."
                     onLaunch={(settings) => setConfig(settings)}
                     onBack={() => navigate('/')}
                 />
@@ -205,8 +214,10 @@ export default function PlexusExperience() {
                     >
                         &larr; Return to Lobby
                     </button>
-                    <canvas ref={canvasRef} className="w-full h-full block filter contrast-[1.3] saturate-[1.2]"></canvas>
 
+                    <canvas ref={canvasRef} className="w-full h-full block filter saturate-150 contrast-125"></canvas>
+
+                    {/* Cinematic Noise */}
                     <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.05] contrast-150 brightness-150">
                         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                             <filter id="noiseFilter">
