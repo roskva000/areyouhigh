@@ -57,14 +57,15 @@ function DiagnosticShuffler() {
 }
 
 // --- Card 2: Telemetry Typewriter ---
+const messages = [
+    '> Initializing frequency sync...',
+    '> Calibrating delta waves...',
+    '> Synchronizing visual cortex...',
+    '> Acoustic resonance confirmed.',
+    '> Awaiting neural handshake...'
+];
+
 function TelemetryTypewriter() {
-    const messages = [
-        '> Initializing frequency sync...',
-        '> Calibrating delta waves...',
-        '> Synchronizing visual cortex...',
-        '> Acoustic resonance confirmed.',
-        '> Awaiting neural handshake...'
-    ];
     const [text, setText] = useState('');
     const [msgIndex, setMsgIndex] = useState(0);
 

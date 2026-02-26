@@ -1,12 +1,58 @@
 export const EXPERIENCES = [
-    // --- 1. FRACTAL & MATHEMATICAL ABYSS ---
+    // --- 0. SPECIAL / FEATURED EXPERIENCES (Previously Standalone) ---
     {
         id: 'abyss',
         title: 'The Abyss',
-        desc: 'Ever-deepening Mandelbrot set. Crystal complexity of mathematical beauty.',
+        desc: 'Dive into the infinite depth of the Mandelbrot set. A journey through mathematical beauty and crystalline complexity.',
         bg: '#050505', accent: '#00f2fe', category: 'Fractal', thumbId: 'photo-1635776062127-d379bfcba9f8',
-        master: 'fractal_mandelbrot', params: { detail: 1.0, scale: 0.5, flow: 0.1 }
+        master: 'special_abyss', params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
     },
+    {
+        id: 'fluid',
+        title: 'Liquid Chrome',
+        desc: 'Dive into metallic fluid dynamics. Multi-scale domain warping creates an impossible ocean of liquid color and geometry.',
+        bg: '#050505', accent: '#cccccc', category: 'Organic', thumbId: 'photo-1476842634003-7dcca8f832de',
+        master: 'special_fluid', params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
+    },
+    {
+        id: 'fractal', // Changed from 'sacred-geometry' to match previous standalone route if needed, or kept consistent
+        title: 'Sacred Geometry',
+        desc: 'Enter the crystalline structure of the universe. A kaleidoscopic raymarching journey through folding space and infinite complexity.',
+        bg: '#000000', accent: '#ffcc00', category: 'Fractal', thumbId: 'photo-1504639725590-34d0984388bd',
+        master: 'special_fractal', params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
+    },
+    {
+        id: 'mandala',
+        title: 'Infinite Kaleidoscope',
+        desc: 'Lose yourself in the geometry of the mind. An asymmetrical, infinitely repeating neon mandala that responds to your choices.',
+        bg: '#000000', accent: '#ff00ff', category: 'Geometry', thumbId: 'photo-1541701494587-cb58502866ab',
+        master: 'special_mandala', params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
+    },
+    {
+        id: 'particles',
+        title: 'Quantum Field',
+        desc: 'Enter the gravitational pull of a 3D strange attractor. Watch as thousands of particles weave a chaotic web of light.',
+        bg: '#000000', accent: '#ffffff', category: 'Cosmic', thumbId: 'photo-1550025899-5f8a06b1b3a8',
+        master: 'special_particles', // Special key for the vertex/fragment pair
+        mode: 'points', // Special render mode flag
+        params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
+    },
+    {
+        id: 'plexus',
+        title: 'Neural Plexus',
+        desc: 'Visualize the interconnected web of thought and data. A multi-layered cellular network of glowing nodes and geometric bonds.',
+        bg: '#0a0a14', accent: '#00ccff', category: 'Geometry', thumbId: 'photo-1515378791036-0648a3ef77b2',
+        master: 'special_plexus', params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
+    },
+    {
+        id: 'tunnel',
+        title: 'Hyper-Space Tunnel',
+        desc: 'A volumetric journey through the architecture of the void. Experience the geometry of a limitless dimension.',
+        bg: '#000000', accent: '#7b61ff', category: 'Physics', thumbId: 'photo-1510511459019-5deeee712163',
+        master: 'special_tunnel', params: { complexity: 2.0, glitch: 0.0, stardust: 0.0 }
+    },
+
+    // --- 1. FRACTAL & MATHEMATICAL ABYSS (Standard) ---
     {
         id: 'mandelbulb',
         title: '3D Mandelbulb',
@@ -99,13 +145,6 @@ export const EXPERIENCES = [
         desc: 'Metallic, pulsing, alien ship-like veins that throb with life.',
         bg: '#0a0a0a', accent: '#555555', category: 'Organic', thumbId: 'photo-1518837695005-2083093ee35b',
         master: 'organic_fbm', params: { density: 1.2, warp: 0.5, pulse: 0.3 }
-    },
-    {
-        id: 'liquid-chrome',
-        title: 'Liquid Chrome',
-        desc: 'Pulsing mercury pool, terminator-style, constantly smoothing itself out.',
-        bg: '#050505', accent: '#cccccc', category: 'Organic', thumbId: 'photo-1476842634003-7dcca8f832de',
-        master: 'organic_chrome', params: { density: 0.5, warp: 2.0, pulse: 0.1 }
     },
     {
         id: 'reaction-diffusion',

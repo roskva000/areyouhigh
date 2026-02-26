@@ -3,28 +3,17 @@ import { useNavigate, Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { EXPERIENCES } from '../data/experiences';
-import { ArrowRight, Palette, Check } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const COLOR_PRESETS = [
-    '#7b61ff', // Plasma
-    '#00f2fe', // Cyan
-    '#f5576c', // Rose
-    '#ffcc00', // Gold
-    '#00ffaa', // Mint
-    '#ff00ff', // Magenta
-    '#ffffff', // White
-];
 
 export default function Experiences() {
     const containerRef = useRef(null);
     const navigate = useNavigate();
-    const [customColors, setCustomColors] = useState(() => {
+    const [customColors] = useState(() => {
         const saved = localStorage.getItem('experience_colors');
         return saved ? JSON.parse(saved) : {};
     });
-    const [activePicker, setActivePicker] = useState(null);
 
     // Featured experiences (top 6 as per request, 2 rows of 3)
     const featured = EXPERIENCES.slice(0, 6);
@@ -48,13 +37,6 @@ export default function Experiences() {
         }, containerRef);
         return () => ctx.revert();
     }, []);
-
-    const handleColorSelect = (id, color) => {
-        const newColors = { ...customColors, [id]: color };
-        setCustomColors(newColors);
-        localStorage.setItem('experience_colors', JSON.stringify(newColors));
-        setActivePicker(null);
-    };
 
     return (
         <section ref={containerRef} id="experiences" className="w-full py-32 px-6 md:px-16 container mx-auto bg-background">

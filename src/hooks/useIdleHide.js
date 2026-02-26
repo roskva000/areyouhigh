@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 export default function useIdleHide(timeout = 5000) {
     const [idle, setIdle] = useState(false);
 
+    // This function is kept for external use if needed, even if not used internally by the effect
     const resetTimer = useCallback(() => {
         setIdle(false);
     }, []);
@@ -37,5 +38,6 @@ export default function useIdleHide(timeout = 5000) {
         };
     }, [timeout]);
 
-    return idle;
+    // Return both the state and the reset function
+    return { idle, resetTimer };
 }
