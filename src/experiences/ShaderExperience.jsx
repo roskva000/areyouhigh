@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ExperienceLobby from '../components/ExperienceLobby';
+import BriefingOverlay from '../components/BriefingOverlay';
+import useIdleHide from '../hooks/useIdleHide';
 import { EXPERIENCES } from '../data/experiences';
 import { MASTER_SHADERS } from '../data/shaders';
 
@@ -9,15 +11,17 @@ export default function ShaderExperience() {
     const canvasRef = useRef(null);
     const navigate = useNavigate();
     const [config, setConfig] = useState(null);
+    const [briefingDone, setBriefingDone] = useState(false);
+    const idle = useIdleHide(5000);
 
     const expData = EXPERIENCES.find(e => e.id === id);
-    // Use the master shader defined in expData, or fallback to 'abstract'
     const shaderSource = MASTER_SHADERS[expData?.master] || MASTER_SHADERS['abstract'];
 
     useEffect(() => {
-        if (!config || !expData) return;
+        if (!config || !briefingDone || !expData) return;
 
         const canvas = canvasRef.current;
+        if (!canvas) return;
         const gl = canvas.getContext('webgl');
         if (!gl) return;
 
@@ -45,6 +49,8 @@ export default function ShaderExperience() {
         `;
         const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
         const fs = createShader(gl, gl.FRAGMENT_SHADER, shaderSource);
+
+        if (!vs || !fs) return;
 
         gl.attachShader(program, vs);
         gl.attachShader(program, fs);
@@ -97,7 +103,6 @@ export default function ShaderExperience() {
         let shaderTime = 0;
 
         const render = (timestamp) => {
-            // Prevent initial large delta time jump
             if (!lastTimestamp) {
                 lastTimestamp = timestamp;
                 animationFrameId = requestAnimationFrame(render);
@@ -143,7 +148,7 @@ export default function ShaderExperience() {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(animationFrameId);
         };
-    }, [config, id, shaderSource]);
+    }, [config, briefingDone, id, shaderSource]);
 
     if (!expData) return <div>Experience not found</div>;
 
@@ -156,16 +161,17 @@ export default function ShaderExperience() {
                     onLaunch={(settings) => setConfig(settings)}
                     onBack={() => navigate('/gallery')}
                 />
+            ) : !briefingDone ? (
+                <BriefingOverlay onComplete={() => setBriefingDone(true)} />
             ) : (
                 <>
                     <button
-                        onClick={() => setConfig(null)}
-                        className="absolute top-6 left-6 z-50 font-mono text-xs text-white/50 hover:text-white transition-colors uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md"
+                        onClick={() => { setConfig(null); setBriefingDone(false); }}
+                        className={`absolute top-6 left-6 z-50 font-mono text-xs text-white/50 hover:text-white transition-all duration-700 uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md ${idle ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                     >
                         &larr; Return to Lobby
                     </button>
                     <canvas ref={canvasRef} className="w-full h-full block filter contrast-[1.2] saturate-[1.1]"></canvas>
-
                     <div className="pointer-events-none fixed inset-0 z-40 opacity-[0.05] contrast-150 brightness-150">
                         <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                             <filter id="noiseFilter">
