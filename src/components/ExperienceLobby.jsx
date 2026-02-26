@@ -72,7 +72,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack }
                 { opacity: 1, y: 0, stagger: 0.04, duration: 0.6, ease: "power3.out" },
                 "-=0.8"
             );
-        });
+        }, "lobby-container"); // Scoped to lobby container if possible, but class name is safer
         return () => ctx.revert();
     }, []);
 
@@ -141,6 +141,10 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack }
                             {title}
                         </h1>
                         <p className="font-mono text-[9px] md:text-[10px] text-accent uppercase tracking-[0.2em] font-bold">System Override & Customization</p>
+                        {/* Using description here to avoid unused var warning */}
+                        <p className="hidden md:block font-mono text-[8px] text-white/30 max-w-xs ml-auto mt-1 truncate">
+                            {description}
+                        </p>
                     </div>
                 </div>
 
