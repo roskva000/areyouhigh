@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import prerender from 'vite-plugin-prerender'
-import path from 'path'
-import routes from './scripts/routes.json'
+const { defineConfig } = require('vite')
+const react = require('@vitejs/plugin-react')
+const prerender = require('vite-plugin-prerender')
+const path = require('path')
+const routes = require('./scripts/routes.json')
 
 // https://vite.dev/config/
-export default defineConfig({
+module.exports = defineConfig({
   plugins: [
     react(),
     prerender({
