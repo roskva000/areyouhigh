@@ -373,6 +373,8 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             step="0.1"
                             value={intensity}
                             onChange={(e) => setIntensity(parseFloat(e.target.value))}
+                            aria-label="Intensity"
+                            aria-valuetext={`${(intensity * 100).toFixed(0)}%`}
                             className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors"
                         />
                     </div>
@@ -391,6 +393,8 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             step="0.05"
                             value={glitch}
                             onChange={(e) => setGlitch(parseFloat(e.target.value))}
+                            aria-label="Glitch"
+                            aria-valuetext={`${(glitch * 100).toFixed(0)}%`}
                             className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#f5576c] hover:bg-white/20 transition-colors"
                         />
                     </div>
