@@ -139,6 +139,11 @@ export default function ShaderExperience() {
         const uCameraMode = gl.getUniformLocation(program, 'u_camera_mode');
         const uBlendMode = gl.getUniformLocation(program, 'u_blend_mode');
 
+        // --- NEW UNIFORMS ---
+        const uScale = gl.getUniformLocation(program, 'u_scale');
+        const uZoom = gl.getUniformLocation(program, 'u_zoom');
+        const uSymmetry = gl.getUniformLocation(program, 'u_symmetry');
+
         // Extra Params mapping
         const extraParamLocations = {};
         if (expData.params) {
@@ -190,6 +195,12 @@ export default function ShaderExperience() {
             if (uGlitch) gl.uniform1f(uGlitch, config.glitch || 0.0);
             if (uStardust) gl.uniform1f(uStardust, config.stardust || 0.0);
 
+            // --- PASS NEW UNIFORMS ---
+            // Fallback to config if present, otherwise ignore (shader might use default or extraParam)
+            if (uScale && config.zoom) gl.uniform1f(uScale, config.zoom);
+            if (uZoom && config.zoom) gl.uniform1f(uZoom, config.zoom); // Some shaders use u_zoom, some u_scale
+            if (uSymmetry && config.symmetry) gl.uniform1f(uSymmetry, config.symmetry);
+
             const camModeMap = { 'cinematic': 0.0, 'freefall': 1.0, 'chaotic': 2.0 };
             if (uCameraMode) gl.uniform1f(uCameraMode, camModeMap[config.cameraMode] || 0.0);
 
@@ -205,10 +216,18 @@ export default function ShaderExperience() {
             gl.uniform3f(uCol2, c2[0], c2[1], c2[2]);
             gl.uniform3f(uCol3, c3[0], c3[1], c3[2]);
 
+            // Pass default params unless overridden by our new universal controls
             if (expData.params) {
                 Object.keys(expData.params).forEach(key => {
                     const loc = extraParamLocations[key];
                     if (loc) {
+                        // Check if this key is one of our "universal" overrides
+                        if (key === 'scale' && config.zoom) return; // Skip, let config.zoom handle u_scale
+                        if (key === 'zoom' && config.zoom) return;  // Skip, let config.zoom handle u_zoom
+                        if (key === 'symmetry' && config.symmetry) return; // Skip, let config.symmetry handle u_symmetry
+                        if (key === 'complexity' && config.complexity) return; // Skip
+
+                        // Otherwise pass the default static param
                         gl.uniform1f(loc, expData.params[key]);
                     }
                 });

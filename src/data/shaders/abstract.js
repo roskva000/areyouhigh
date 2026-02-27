@@ -13,6 +13,10 @@ export const abstract_kaleido = `
   uniform float u_chaos;
   uniform float u_drift;
   uniform float u_resolution_param;
+  // New uniforms
+  uniform float u_scale;
+  uniform float u_zoom;
+  uniform float u_symmetry;
 
   mat2 rot(float a) { float s = sin(a), c = cos(a); return mat2(c, -s, s, c); }
 
@@ -24,8 +28,14 @@ export const abstract_kaleido = `
     vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
     float t = u_time * 0.2 * u_speed;
 
+    // Apply Zoom/Scale
+    float zoomVal = (u_zoom > 0.0) ? u_zoom : ((u_scale > 0.0) ? u_scale : 1.0);
+    uv /= zoomVal;
+
     // Kaleidoscope folding
-    float sides = 3.0 + u_chaos * 5.0;
+    // Use u_symmetry if provided, else fall back to chaos-based calculation
+    float sides = (u_symmetry > 0.0) ? u_symmetry : (3.0 + u_chaos * 5.0);
+
     float a = atan(uv.y, uv.x);
     float r = length(uv);
     a = mod(a, 6.28318 / sides) - 3.14159 / sides;
@@ -71,12 +81,19 @@ export const abstract_noise = `
   uniform float u_chaos;
   uniform float u_drift;
   uniform float u_resolution_param;
+  // New uniforms
+  uniform float u_scale;
+  uniform float u_zoom;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 
   void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     float t = u_time * u_speed;
+
+    // Apply Zoom
+    float zoomVal = (u_zoom > 0.0) ? u_zoom : ((u_scale > 0.0) ? u_scale : 1.0);
+    uv = (uv - 0.5) / zoomVal + 0.5;
 
     float scale = 50.0 + u_chaos * 200.0;
     vec2 grid = floor(uv * scale);
@@ -122,6 +139,9 @@ export const abstract_flow = `
   uniform float u_chaos;
   uniform float u_drift;
   uniform float u_resolution_param;
+  // New uniforms
+  uniform float u_scale;
+  uniform float u_zoom;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float noise(vec2 p) {
@@ -134,6 +154,10 @@ export const abstract_flow = `
   void main() {
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
     float t = u_time * 0.2 * u_speed;
+
+    // Apply Zoom
+    float zoomVal = (u_zoom > 0.0) ? u_zoom : ((u_scale > 0.0) ? u_scale : 1.0);
+    uv /= zoomVal;
 
     // Vector field flow
     vec2 p = uv * (2.0 + u_chaos * 3.0);
@@ -177,6 +201,9 @@ export const abstract_dissolve = `
   uniform float u_chaos;
   uniform float u_drift;
   uniform float u_resolution_param;
+  // New uniforms
+  uniform float u_scale;
+  uniform float u_zoom;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
   float noise(vec2 p) {
@@ -189,6 +216,10 @@ export const abstract_dissolve = `
   void main() {
     vec2 uv = gl_FragCoord.xy / u_resolution.xy;
     float t = u_time * 0.3 * u_speed;
+
+    // Apply Zoom
+    float zoomVal = (u_zoom > 0.0) ? u_zoom : ((u_scale > 0.0) ? u_scale : 1.0);
+    uv = (uv - 0.5) / zoomVal + 0.5;
 
     // Melting effect - UV distortion increases over time
     float melt_phase = sin(t * 0.5) * 0.5 + 0.5;
