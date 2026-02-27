@@ -7,7 +7,7 @@ const INDEX_PATH = path.join(DIST_DIR, 'index.html');
 const EXPERIENCES_PATH = path.join(__dirname, '../src/data/experiences.js');
 
 async function run() {
-    console.log('--- Starting Light Prerender ---');
+    console.log('--- Starting Ultra-Light Prerender ---');
 
     if (!fs.existsSync(INDEX_PATH)) {
         console.error('Error: dist/index.html not found. Run "npm run build" first.');
@@ -25,38 +25,64 @@ async function run() {
         experiences.push({ id: match[1], title: match[2], desc: match[3] });
     }
 
-    console.log(`Found ${experiences.length} experiences to prerender.`);
+    // Extract Master IDs for Gallery collections
+    const masterIds = new Set();
+    const masterRegex = /master:\s*['"]([^'"]+)['"]/g;
+    while ((match = masterRegex.exec(experiencesContent)) !== null) {
+        masterIds.add(match[1]);
+    }
 
+    console.log(`Prerendering ${experiences.length} experiences and ${masterIds.size} master collections.`);
+
+    // 1. Prerender Experiences
     for (const exp of experiences) {
-        const route = `experience/${exp.id}`;
-        const dir = path.join(DIST_DIR, route);
+        savePage(`experience/${exp.id}`, {
+            title: `${exp.title} — uHigh?`,
+            description: exp.desc,
+            url: `https://uhigh.xyz/experience/${exp.id}`
+        });
+    }
 
+    // 2. Prerender Master Collections
+    for (const masterId of masterIds) {
+        const formattedId = masterId.charAt(0).toUpperCase() + masterId.slice(1);
+        savePage(`gallery/${masterId}`, {
+            title: `${formattedId} Collection — uHigh?`,
+            description: `Explore the ${formattedId} collection of interactive visual experiences.`,
+            url: `https://uhigh.xyz/gallery/${masterId}`
+        });
+    }
+
+    // 3. Prerender Gallery
+    savePage('gallery', {
+        title: 'Gallery — uHigh?',
+        description: 'The complete collection of visual portals and interactive shader experiences.',
+        url: 'https://uhigh.xyz/gallery'
+    });
+
+    console.log('--- Ultra-Light Prerender Complete ---');
+
+    function savePage(route, meta) {
+        const dir = path.join(DIST_DIR, route);
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
 
-        const title = `${exp.title} — uHigh?`;
-        const description = exp.desc;
-        const url = `https://uhigh.xyz/experience/${exp.id}`;
-        const image = `https://uhigh.xyz/og-image.jpg`; // Fallback image
+        const image = `https://uhigh.xyz/og-image.jpg`; // Fallback
 
-        // Replace basic meta tags in the template
         let html = template
-            .replace(/<title>.*?<\/title>/, `<title>${title}</title>`)
-            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${description}" />`)
-            // OpenGraph
-            .replace(/<meta property="og:title" content=".*?" \/>/, `<meta property="og:title" content="${title}" />`)
-            .replace(/<meta property="og:description" content=".*?" \/>/, `<meta property="og:description" content="${description}" />`)
-            .replace(/<meta property="og:url" content=".*?" \/>/, `<meta property="og:url" content="${url}" />`)
-            .replace(/<meta property="og:image" content=".*?" \/>/, `<meta property="og:image" content="${image}" />`)
-            // Twitter
-            .replace(/<meta name="twitter:title" content=".*?" \/>/, `<meta name="twitter:title" content="${title}" />`)
-            .replace(/<meta name="twitter:description" content=".*?" \/>/, `<meta name="twitter:description" content="${description}" />`);
+            .replace(/<title>.*?<\/title>/, `<title>${meta.title}</title>`)
+            .replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${meta.description}" />`)
+            .replace(/<meta property="og:title" content=".*?" \/>/g, `<meta property="og:title" content="${meta.title}" />`)
+            .replace(/<meta property="og:description" content=".*?" \/>/g, `<meta property="og:description" content="${meta.description}" />`)
+            .replace(/<meta property="og:url" content=".*?" \/>/g, `<meta property="og:url" content="${meta.url}" />`)
+            .replace(/<meta property="og:image" content=".*?" \/>/g, `<meta property="og:image" content="${image}" />`)
+            .replace(/<meta name="twitter:title" content=".*?" \/>/g, `<meta name="twitter:title" content="${meta.title}" />`)
+            .replace(/<meta name="twitter:description" content=".*?" \/>/g, `<meta name="twitter:description" content="${meta.description}" />`)
+            .replace(/<meta name="twitter:image" content=".*?" \/>/g, `<meta name="twitter:image" content="${image}" />`);
 
         fs.writeFileSync(path.join(dir, 'index.html'), html);
     }
-
-    console.log('--- Light Prerender Complete ---');
 }
 
 run().catch(console.error);
