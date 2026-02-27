@@ -1,16 +1,81 @@
-# React + Vite
+# uHigh — Visual Feast Portals
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+uHigh is an immersive, shader-driven web application designed to provide a transcendent visual experience. It features a curated collection of high-performance fragment and vertex shaders, categorized into various algorithmic domains ranging from organic fractals to glitchy digital nightmares.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **🌀 Immersive Portals**: Explore over 100+ unique shader experiences.
+- **💬 Global Pulse Chat**: Real-time interaction with other explorers via Supabase integration.
+- **🎨 Interactive Parameters**: Fine-tune shader complexity, flow, and intensity in real-time.
+- **📂 Master Collections**: Deep dives into specific shader families (Fractals, Fluid Dynamics, etc.).
+- **🎭 Responsive Design**: Optimized for premium viewing across all modern devices.
+- **⚡ High Performance**: Built with Vite and React 19 for instantaneous transitions and HMR.
 
-## React Compiler
+## 🛠️ Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: [React 19](https://react.dev/), [Vite](https://vitejs.dev/)
+- **Animation**: [GSAP](https://greensock.com/gsap/) with [`@gsap/react`](https://www.npmjs.com/package/@gsap/react)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/), [PostCSS](https://postcss.org/)
+- **Backend/Real-time**: [Supabase](https://supabase.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Routing**: [React Router v7](https://reactrouter.com/)
 
-## Expanding the ESLint configuration
+## 📂 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `src/components/`: Core UI blocks (Navbar, Hero, GlobalChat, etc.)
+- `src/experiences/`: The main shader engine and interactive lobby.
+- `src/pages/`: Main application views (Home, Gallery, MasterCollection).
+- `src/data/`: The heart of the content—`experiences.js` and `shaders.js`.
+- `src/lib/`: External service configurations (Supabase).
+- `src/hooks/`: Custom React hooks for state and interaction.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (Latest LTS recommended)
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone [repository-url]
+   cd areyouhigh
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup:**
+   Create a `.env` file based on `.env.example` and add your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Run development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+## 🌌 Experience Categories
+
+- **Fractal**: Mathematical infinities and recursive beauty.
+- **Organic**: Biomechanical textures and cellular growth.
+- **Physics**: Space-time warps, black holes, and gravity waves.
+- **Fluid**: Plasma, noise mountains, and liquid chrome.
+- **Light**: Prism refractions and digital auroras.
+- **Industrial**: Brutalist algorithms and mechanical DNA.
+- **Glitch**: Databend flows and digital nightmares.
+
+---
+
+*“Dive into the infinite depth. Experience the geometry of a limitless dimension.”*
