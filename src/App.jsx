@@ -3,10 +3,14 @@ import Home from './pages/Home';
 import Gallery from './pages/Gallery';
 import MasterCollection from './pages/MasterCollection';
 import ShaderExperience from './experiences/ShaderExperience';
+import GlobalChat from './components/GlobalChat';
 
 function App() {
   return (
     <BrowserRouter>
+      {/* Global Elements */}
+      <GlobalChat />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/gallery" element={<Gallery />} />
@@ -19,9 +23,6 @@ function App() {
 
         {/*
           UNIFIED EXPERIENCE ROUTING
-          All experiences, including the previously hardcoded ones (fractal, fluid, etc.),
-          are now handled by the dynamic routing system. The IDs (e.g., 'fractal', 'abyss')
-          match the IDs in src/data/experiences.js
         */}
         <Route path="/experience/:id" element={<ShaderExperience />} />
       </Routes>
