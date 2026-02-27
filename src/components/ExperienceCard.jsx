@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers } from 'lucide-react';
+import { Layers, Heart } from 'lucide-react';
 
 export default function ExperienceCard({
     title,
@@ -9,6 +9,7 @@ export default function ExperienceCard({
     description,
     isSpecial = false,
     variantCount = 0,
+    likeCount = 0,
     onClick,
     index = 0
 }) {
@@ -39,14 +40,23 @@ export default function ExperienceCard({
             <div className="absolute inset-0 p-8 flex flex-col justify-end z-10 backdrop-blur-[2px] group-hover:backdrop-blur-none transition-all duration-500">
                 <div className="relative transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="font-mono text-[9px] uppercase tracking-[0.4em] block group-hover:text-accent transition-colors" style={{ color: accentColor }}>
-                            {category} {index > 0 && `// 0${index}`}
-                        </span>
-                        {!isSpecial && variantCount > 0 && (
-                            <span className="flex items-center gap-1 font-mono text-[9px] text-white/50 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-md">
-                                <Layers size={10} /> {variantCount} Var.
+                        <div className="flex items-center gap-2">
+                            <span className="font-mono text-[9px] uppercase tracking-[0.4em] block group-hover:text-accent transition-colors" style={{ color: accentColor }}>
+                                {category} {index > 0 && `// 0${index}`}
                             </span>
-                        )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                             {likeCount > 0 && (
+                                <span className="flex items-center gap-1 font-mono text-[9px] text-white/50 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-md">
+                                    <Heart size={10} className="text-red-500 fill-red-500" /> {likeCount}
+                                </span>
+                            )}
+                            {!isSpecial && variantCount > 0 && (
+                                <span className="flex items-center gap-1 font-mono text-[9px] text-white/50 bg-white/10 px-2 py-0.5 rounded-full backdrop-blur-md">
+                                    <Layers size={10} /> {variantCount} Var.
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     <h3 className="font-sans font-bold text-2xl text-white mb-2 leading-tight" style={{ color: accentColor }}>
