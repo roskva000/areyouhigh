@@ -6,11 +6,27 @@ import Footer from '../components/Footer';
 import ExperienceCard from '../components/ExperienceCard';
 import { EXPERIENCES } from '../data/experiences';
 import { Search, ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function Gallery() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
+    const [allVotes, setAllVotes] = useState({});
+
+    useEffect(() => {
+        const fetchVotes = async () => {
+            const { data, error } = await supabase.rpc('get_all_likes');
+            if (data) {
+                const votesMap = {};
+                data.forEach(row => {
+                    votesMap[row.experience_id] = row.count;
+                });
+                setAllVotes(votesMap);
+            }
+        };
+        fetchVotes();
+    }, []);
 
     // Group experiences by Master Shader
     const masterGroups = useMemo(() => {
@@ -37,6 +53,11 @@ export default function Gallery() {
                     .join(' ');
             }
 
+            // Calculate total likes for the group
+            const totalLikes = items.reduce((sum, item) => {
+                return sum + (allVotes[item.id] || 0);
+            }, 0);
+
             return {
                 id: key, // Master Key
                 isSpecial,
@@ -44,10 +65,11 @@ export default function Gallery() {
                 category: items[0].category,
                 items: items,
                 thumbId: items[0].thumbId, // Use the first item's thumb
-                accent: items[0].accent
+                accent: items[0].accent,
+                totalLikes: totalLikes
             };
         });
-    }, []);
+    }, [allVotes]);
 
     const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
 
@@ -58,8 +80,13 @@ export default function Gallery() {
         return matchesSearch && matchesCategory;
     });
 
-    // Sort: Specials first, then others
+    // Sort: Primarily by likes (descending)
     const sortedGroups = [...filteredGroups].sort((a, b) => {
+        // Primary sort: Likes (Descending)
+        if (b.totalLikes !== a.totalLikes) {
+            return b.totalLikes - a.totalLikes;
+        }
+        // Secondary sort: Special items first
         if (a.isSpecial && !b.isSpecial) return -1;
         if (!a.isSpecial && b.isSpecial) return 1;
         return 0;
@@ -67,6 +94,7 @@ export default function Gallery() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        // Delay animation slightly to allow sort to settle if needed, or just run immediately
         const ctx = gsap.context(() => {
             gsap.fromTo('.gallery-card',
                 { y: 30, opacity: 0 },
@@ -75,12 +103,13 @@ export default function Gallery() {
                     opacity: 1,
                     duration: 0.6,
                     stagger: 0.03,
-                    ease: 'power2.out'
+                    ease: 'power2.out',
+                    overwrite: 'auto' // ensure previous animations are overwritten
                 }
             );
         });
         return () => ctx.revert();
-    }, [activeCategory]);
+    }, [activeCategory, allVotes]); // Re-animate when votes load/change sort
 
     const handleCardClick = (group) => {
         if (group.isSpecial) {
@@ -164,6 +193,7 @@ export default function Gallery() {
                                 description={description}
                                 isSpecial={group.isSpecial}
                                 variantCount={count}
+                                likeCount={group.totalLikes}
                                 onClick={() => handleCardClick(group)}
                             />
                         );
