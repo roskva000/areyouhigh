@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import ExperienceCard from '../components/ExperienceCard';
 import { EXPERIENCES } from '../data/experiences';
 import { Search, ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Gallery() {
     const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function Gallery() {
             // For groups, format the master key
             let title = items[0].title;
             if (!isSpecial) {
-                 title = key
+                title = key
                     .split('_')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
@@ -94,6 +95,10 @@ export default function Gallery() {
 
     return (
         <div className="relative w-full min-h-screen bg-background antialiased overflow-x-hidden selection:bg-accent/30 selection:text-white">
+            <SEO
+                title="Visual Archive"
+                description={`Explore the archive of ${EXPERIENCES.length} unique, GPU-accelerated psychedelic visual experiences.`}
+            />
             <Navbar />
 
             <main className="relative z-10 pt-40 pb-32 px-6 md:px-16 container mx-auto">

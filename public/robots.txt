@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /dist/
-
 Sitemap: https://uhigh.xyz/sitemap.xml

@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import ExperienceCard from '../components/ExperienceCard';
 import { EXPERIENCES } from '../data/experiences';
 import { ArrowLeft } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function MasterCollection() {
     const { masterId } = useParams();
@@ -48,6 +49,10 @@ export default function MasterCollection() {
 
     return (
         <div className="relative w-full min-h-screen bg-background antialiased overflow-x-hidden selection:bg-accent/30 selection:text-white">
+            <SEO
+                title={`${masterTitle} Variations`}
+                description={`Explore ${variations.length} distinct configurations for the ${masterTitle} algorithm.`}
+            />
             <Navbar />
 
             <main className="relative z-10 pt-40 pb-32 px-6 md:px-16 container mx-auto">

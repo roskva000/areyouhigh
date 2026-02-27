@@ -5,6 +5,7 @@ import BriefingOverlay from '../components/BriefingOverlay';
 import useIdleHide from '../hooks/useIdleHide';
 import { EXPERIENCES } from '../data/experiences';
 import { MASTER_SHADERS } from '../data/shaders';
+import SEO from '../components/SEO';
 
 // Standard Quad Vertex Shader
 const QUAD_VERTEX_SHADER = `
@@ -97,7 +98,7 @@ export default function ShaderExperience() {
         gl.useProgram(program);
 
         // --- ATTRIBUTE SETUP ---
-        let count = 0; 
+        let count = 0;
 
         if (mode === 'points') {
             const densityMultiplier = config.complexity ? Math.floor(config.complexity) : 2;
@@ -258,10 +259,15 @@ export default function ShaderExperience() {
     // 3. Experience Running
     return (
         <div className="relative w-screen h-[100dvh] overflow-hidden bg-black selection:bg-transparent text-white">
+            <SEO
+                title={expData.title}
+                description={expData.desc}
+                url={`https://uhigh.xyz/experience/${id}`}
+            />
             <button
-                onClick={() => { 
+                onClick={() => {
                     setConfig(null); // Go back to Lobby
-                    setBriefingDone(false); 
+                    setBriefingDone(false);
                 }}
                 className={`absolute top-6 left-6 z-50 font-mono text-xs text-white/50 hover:text-white transition-all duration-700 uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md ${idle ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             >
