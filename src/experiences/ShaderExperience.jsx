@@ -14,6 +14,14 @@ const QUAD_VERTEX_SHADER = `
   }
 `;
 
+const hexToRgb = (hex) => {
+    if (!hex) return [0, 0, 0];
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    return [isNaN(r) ? 0 : r, isNaN(g) ? 0 : g, isNaN(b) ? 0 : b];
+};
+
 export default function ShaderExperience() {
     const { id } = useParams();
     const canvasRef = useRef(null);
@@ -162,14 +170,6 @@ export default function ShaderExperience() {
             });
         }
 
-        const hexToRgb = (hex) => {
-            if (!hex) return [0, 0, 0];
-            const r = parseInt(hex.slice(1, 3), 16) / 255;
-            const g = parseInt(hex.slice(3, 5), 16) / 255;
-            const b = parseInt(hex.slice(5, 7), 16) / 255;
-            return [isNaN(r) ? 0 : r, isNaN(g) ? 0 : g, isNaN(b) ? 0 : b];
-        };
-
         const onResize = () => {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -180,6 +180,25 @@ export default function ShaderExperience() {
         window.addEventListener('resize', onResize);
         onResize();
 
+        // ⚡ OPTIMIZATION: Pre-calculate static uniforms outside the render loop
+        // These values come from 'config' which does not change during the animation
+        const timeScale = config.speed || 1.0;
+        const complexityVal = config.complexity || 2.0;
+        const glitchVal = config.glitch || 0.0;
+        const stardustVal = config.stardust || 0.0;
+        const intensityVal = config.intensity || 1.0;
+
+        const camModeMap = { 'cinematic': 0.0, 'freefall': 1.0, 'chaotic': 2.0 };
+        const cameraModeVal = camModeMap[config.cameraMode] || 0.0;
+
+        const blendModeMap = { 'additive': 0.0, 'subtractive': 1.0 };
+        const blendModeVal = blendModeMap[config.blendMode] || 0.0;
+
+        const colors = config.palette?.colors || ['#ffffff', '#888888', '#000000'];
+        const c1 = hexToRgb(colors[0]);
+        const c2 = hexToRgb(colors[1]);
+        const c3 = hexToRgb(colors[2]);
+
         let lastTimestamp = 0;
         let shaderTime = 0;
 
@@ -189,7 +208,6 @@ export default function ShaderExperience() {
             lastTimestamp = timestamp;
 
             // Global speed modifier from config
-            const timeScale = config.speed || 1.0;
             shaderTime += deltaTime * timeScale;
 
             if (mode === 'points') {
@@ -200,28 +218,18 @@ export default function ShaderExperience() {
             // Universal Uniforms
             gl.uniform1f(uTime, shaderTime);
             gl.uniform2f(uRes, width, height);
-            gl.uniform1f(uSpeed, config.speed || 1.0);
-            gl.uniform1f(uIntensity, config.intensity || 1.0);
+            gl.uniform1f(uSpeed, timeScale);
+            gl.uniform1f(uIntensity, intensityVal);
 
             // Lobby Specific Uniforms
-            if (uComplexity) gl.uniform1f(uComplexity, config.complexity || 2.0);
-            if (uGlitch) gl.uniform1f(uGlitch, config.glitch || 0.0);
-            if (uStardust) gl.uniform1f(uStardust, config.stardust || 0.0);
+            if (uComplexity) gl.uniform1f(uComplexity, complexityVal);
+            if (uGlitch) gl.uniform1f(uGlitch, glitchVal);
+            if (uStardust) gl.uniform1f(uStardust, stardustVal);
 
-            // Map Camera Mode string to float ID
-            const camModeMap = { 'cinematic': 0.0, 'freefall': 1.0, 'chaotic': 2.0 };
-            if (uCameraMode) gl.uniform1f(uCameraMode, camModeMap[config.cameraMode] || 0.0);
-
-            // Map Blend Mode string to float ID
-            const blendModeMap = { 'additive': 0.0, 'subtractive': 1.0 };
-            if (uBlendMode) gl.uniform1f(uBlendMode, blendModeMap[config.blendMode] || 0.0);
+            if (uCameraMode) gl.uniform1f(uCameraMode, cameraModeVal);
+            if (uBlendMode) gl.uniform1f(uBlendMode, blendModeVal);
 
             // Colors
-            const colors = config.palette?.colors || ['#ffffff', '#888888', '#000000'];
-            const c1 = hexToRgb(colors[0]);
-            const c2 = hexToRgb(colors[1]);
-            const c3 = hexToRgb(colors[2]);
-
             gl.uniform3f(uCol1, c1[0], c1[1], c1[2]);
             gl.uniform3f(uCol2, c2[0], c2[1], c2[2]);
             gl.uniform3f(uCol3, c3[0], c3[1], c3[2]);
