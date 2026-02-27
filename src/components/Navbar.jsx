@@ -9,7 +9,6 @@ export default function Navbar() {
     // Check if we are on the home page or gallery
     const isHome = location.pathname === '/';
     const isGallery = location.pathname === '/gallery';
-
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
@@ -19,11 +18,28 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const handleScrollToSection = (e, sectionId) => {
+        if (isHome) {
+            e.preventDefault();
+            const element = document.getElementById(sectionId);
+            if (element) {
+                const offset = 80;
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.scrollY - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    };
+
     return (
         <nav
             className={`fixed top-0 left-0 right-0 z-[5000] transition-all duration-300 ${scrolled || !isHome
-                    ? 'bg-black/50 backdrop-blur-md border-b border-white/5 py-4'
-                    : 'bg-transparent py-6'
+                ? 'bg-black/50 backdrop-blur-md border-b border-white/5 py-4'
+                : 'bg-transparent py-6'
                 }`}
         >
             <div className="container mx-auto px-6 flex items-center justify-between">
@@ -35,14 +51,16 @@ export default function Navbar() {
                 {/* Links */}
                 <div className="hidden md:flex items-center gap-8">
                     <Link
-                        to="/gallery"
+                        to="/#experiences"
+                        onClick={(e) => handleScrollToSection(e, 'experiences')}
                         className={`font-mono text-sm uppercase tracking-widest transition-colors ${isGallery ? 'text-accent font-bold' : 'text-white/60 hover:text-white'
                             }`}
                     >
                         Artifacts
                     </Link>
                     <Link
-                        to="/manifesto"
+                        to="/#philosophy"
+                        onClick={(e) => handleScrollToSection(e, 'philosophy')}
                         className="font-mono text-sm uppercase tracking-widest text-white/60 hover:text-white transition-colors"
                     >
                         Manifesto
