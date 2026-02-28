@@ -110,7 +110,7 @@ export default function GlobalChat() {
             {/* Trigger Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
+                className={`fixed bottom-6 right-6 z-[99999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
             >
                 {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
                 {!isOpen && (
@@ -121,7 +121,7 @@ export default function GlobalChat() {
             {/* Chat Panel */}
             <div
                 ref={chatRef}
-                className="fixed bottom-24 right-6 w-80 h-96 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[9998] flex flex-col overflow-hidden translate-x-full opacity-0"
+                className="fixed bottom-[10dvh] right-6 w-80 max-h-[50dvh] h-96 bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[99998] flex flex-col overflow-hidden translate-x-full opacity-0"
             >
                 {/* Header */}
                 <div className="p-3 border-b border-white/10 flex items-center justify-between bg-white/5">

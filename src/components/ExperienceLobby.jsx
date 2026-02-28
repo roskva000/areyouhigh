@@ -66,10 +66,15 @@ const Tooltip = ({ text, children }) => {
 
 // --- SUB-COMPONENTS ---
 function LobbyVotes({ experienceId }) {
-    const { likes, userVote, handleVote } = useVotes(experienceId);
+    const { likes, userVote, handleVote, voteError } = useVotes(experienceId);
 
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
+            {voteError && (
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap bg-red-500/90 text-white font-mono text-[10px] px-3 py-1 rounded-md z-50 animate-bounce">
+                    {voteError}
+                </div>
+            )}
             <button
                 onClick={() => handleVote('like')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
@@ -90,7 +95,7 @@ function LobbyVotes({ experienceId }) {
 }
 
 function ArtifactLogs({ experienceId }) {
-    const { comments, postComment, currentNickname } = useComments(experienceId);
+    const { comments, postComment, currentNickname, isSubmitting, commentError } = useComments(experienceId);
     const [newComment, setNewComment] = useState('');
     const commentsEndRef = useRef(null);
 
@@ -144,7 +149,7 @@ function ArtifactLogs({ experienceId }) {
                 />
                 <button
                     type="submit"
-                    disabled={!newComment.trim()}
+                    disabled={isSubmitting || !newComment.trim()}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
                 >
                     <Send size={14} />

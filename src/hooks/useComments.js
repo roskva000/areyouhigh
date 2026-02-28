@@ -5,6 +5,8 @@ import useUserIdentity from './useUserIdentity';
 export default function useComments(experienceId) {
     const { userId, nickname } = useUserIdentity();
     const [comments, setComments] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [commentError, setCommentError] = useState(null);
 
     useEffect(() => {
         if (!experienceId) return;
@@ -46,18 +48,34 @@ export default function useComments(experienceId) {
 
     const postComment = async (content) => {
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
-        if (!userId || !content.trim()) return;
+        if (!userId || !content.trim() || isSubmitting) return;
 
-        // Current nickname is used for display purposes, but stored in DB too
-        await supabase
-            .from('comments')
-            .insert({
-                experience_id: safeExperienceId,
-                user_id: userId,
-                nickname: nickname, // Store the random nickname
-                content: content.trim().substring(0, 140)
-            });
+        setIsSubmitting(true);
+        setCommentError(null);
+        try {
+            // Current nickname is used for display purposes, but stored in DB too
+            const { error } = await supabase
+                .from('comments')
+                .insert({
+                    experience_id: safeExperienceId,
+                    user_id: userId,
+                    nickname: nickname, // Store the random nickname
+                    content: content.trim().substring(0, 140)
+                });
+
+            if (error) {
+                console.error("Failed to post comment:", error);
+                throw error;
+            }
+        } catch (err) {
+            console.error("Error in postComment:", err);
+            setCommentError(err.message || 'Operation failed');
+            setTimeout(() => setCommentError(null), 3000);
+            throw err;
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    return { comments, postComment, currentNickname: nickname };
+    return { comments, postComment, currentNickname: nickname, isSubmitting, commentError };
 }

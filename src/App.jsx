@@ -4,6 +4,7 @@ import Gallery from './pages/Gallery';
 import MasterCollection from './pages/MasterCollection';
 import ShaderExperience from './experiences/ShaderExperience';
 import GlobalChat from './components/GlobalChat';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           UNIFIED EXPERIENCE ROUTING
         */}
         <Route path="/experience/:id" element={<ShaderExperience />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

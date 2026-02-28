@@ -6,6 +6,8 @@ export default function useVotes(experienceId) {
     const { userId } = useUserIdentity();
     const [likes, setLikes] = useState(0);
     const [userVote, setUserVote] = useState(null); // 'like' | 'dislike' | null
+    const [isVoting, setIsVoting] = useState(false);
+    const [voteError, setVoteError] = useState(null);
 
     useEffect(() => {
         if (!experienceId || !userId) return;
@@ -60,7 +62,10 @@ export default function useVotes(experienceId) {
 
     const handleVote = async (type) => {
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
-        if (!userId) return;
+        if (!userId || isVoting) return;
+
+        setIsVoting(true);
+        setVoteError(null);
 
         // Optimistic UI update
         const previousVote = userVote;
@@ -107,8 +112,12 @@ export default function useVotes(experienceId) {
             // Rollback optimistic update
             setUserVote(previousVote);
             setLikes(previousLikes);
+            setVoteError(error.message || 'Operation failed');
+            setTimeout(() => setVoteError(null), 3000);
+        } finally {
+            setIsVoting(false);
         }
     };
 
-    return { likes, userVote, handleVote };
+    return { likes, userVote, handleVote, isVoting, voteError };
 }
