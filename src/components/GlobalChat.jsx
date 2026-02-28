@@ -109,8 +109,9 @@ export default function GlobalChat() {
         <>
             {/* Trigger Button */}
             <button
+                aria-label="Toggle Global Chat"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
+                className={`fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] focus-visible:ring-2 focus-visible:ring-accent ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
             >
                 {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
                 {!isOpen && (
@@ -164,18 +165,20 @@ export default function GlobalChat() {
                 <form onSubmit={handleSend} className="p-3 border-t border-white/10 bg-white/5 relative">
                     <div className="relative">
                         <input
+                            aria-label="Chat message"
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder={cooldown > 0 ? `Wait ${cooldown}s...` : "Transmit signal..."}
                             disabled={cooldown > 0}
                             maxLength={140}
-                            className="w-full bg-black/50 border border-white/10 rounded-xl py-2.5 pl-3 pr-10 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl py-2.5 pl-3 pr-10 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <button
+                            aria-label="Send message"
                             type="submit"
                             disabled={!newMessage.trim() || cooldown > 0}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
                         >
                             <Send size={14} />
                         </button>
