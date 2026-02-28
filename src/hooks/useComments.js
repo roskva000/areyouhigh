@@ -8,12 +8,13 @@ export default function useComments(experienceId) {
 
     useEffect(() => {
         if (!experienceId) return;
+        const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
         const fetchComments = async () => {
             const { data } = await supabase
                 .from('comments')
                 .select('*')
-                .eq('experience_id', experienceId)
+                .eq('experience_id', safeExperienceId)
                 .order('created_at', { ascending: false });
 
             if (data) setComments(data);
@@ -22,12 +23,18 @@ export default function useComments(experienceId) {
         fetchComments();
 
         const channel = supabase
-            .channel(`comments:${experienceId}`)
+            .channel(`comments:${safeExperienceId}`)
             .on(
                 'postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'comments', filter: `experience_id=eq.${experienceId}` },
+                { event: '*', schema: 'public', table: 'comments', filter: `experience_id=eq.${safeExperienceId}` },
                 (payload) => {
-                    setComments(prev => [payload.new, ...prev]);
+                    if (payload.eventType === 'INSERT') {
+                        setComments(prev => [payload.new, ...prev]);
+                    } else if (payload.eventType === 'DELETE') {
+                        setComments(prev => prev.filter(c => c.id !== payload.old.id));
+                    } else if (payload.eventType === 'UPDATE') {
+                        setComments(prev => prev.map(c => c.id === payload.new.id ? payload.new : c));
+                    }
                 }
             )
             .subscribe();
@@ -38,16 +45,17 @@ export default function useComments(experienceId) {
     }, [experienceId]);
 
     const postComment = async (content) => {
+        const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
         if (!userId || !content.trim()) return;
 
         // Current nickname is used for display purposes, but stored in DB too
         await supabase
             .from('comments')
             .insert({
-                experience_id: experienceId,
+                experience_id: safeExperienceId,
                 user_id: userId,
                 nickname: nickname, // Store the random nickname
-                content: content.trim()
+                content: content.trim().substring(0, 140)
             });
     };
 

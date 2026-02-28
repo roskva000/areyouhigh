@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
+import useIdleHide from '../hooks/useIdleHide';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import useUserIdentity from '../hooks/useUserIdentity';
@@ -12,6 +14,9 @@ export default function GlobalChat() {
     const [cooldown, setCooldown] = useState(0);
     const messagesEndRef = useRef(null);
     const chatRef = useRef(null);
+    const location = useLocation();
+    const isExperienceRoute = location.pathname.startsWith('/experience/');
+    const { idle } = useIdleHide(5000);
 
     // Fetch initial messages and subscribe
     useEffect(() => {
@@ -33,7 +38,10 @@ export default function GlobalChat() {
                 'postgres_changes',
                 { event: 'INSERT', schema: 'public', table: 'global_chat' },
                 (payload) => {
-                    setMessages(prev => [...prev.slice(-49), payload.new]);
+                    setMessages(prev => {
+                        const newArr = [...prev, payload.new];
+                        return newArr.length > 50 ? newArr.slice(-50) : newArr;
+                    });
                 }
             )
             .subscribe();
@@ -50,13 +58,14 @@ export default function GlobalChat() {
         }
     }, [messages, isOpen]);
 
-    // Cooldown timer
+    // Cooldown timer using robust timeout sequence
     useEffect(() => {
-        let timer;
         if (cooldown > 0) {
-            timer = setInterval(() => setCooldown(c => c - 1), 1000);
+            const timer = setTimeout(() => {
+                setCooldown(c => c - 1);
+            }, 1000);
+            return () => clearTimeout(timer);
         }
-        return () => clearInterval(timer);
     }, [cooldown]);
 
     const handleSend = async (e) => {
@@ -71,13 +80,21 @@ export default function GlobalChat() {
             .from('global_chat')
             .insert({
                 user_id: userId,
-                content: content
+                content: content.substring(0, 140)
             });
 
         if (error) {
             console.error('Chat error:', error);
         }
     };
+
+    // Force close if idle during experience
+    useEffect(() => {
+        if (isExperienceRoute && idle && isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsOpen(false);
+        }
+    }, [isExperienceRoute, idle, isOpen]);
 
     // Toggle Animation
     useEffect(() => {
@@ -93,7 +110,7 @@ export default function GlobalChat() {
             {/* Trigger Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-300 group shadow-[0_0_20px_rgba(0,0,0,0.5)]"
+                className={`fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
             >
                 {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
                 {!isOpen && (

@@ -20,7 +20,8 @@ export default function ShaderExperience() {
     const canvasRef = useRef(null);
     const navigate = useNavigate();
     const [config, setConfig] = useState(null); // 'config' implies the lobby settings
-    const [briefingDone, setBriefingDone] = useState(false); // Controls overlay
+    const [briefingDone, setBriefingDone] = useState(false);
+    const [shaderError, setShaderError] = useState(false); // Controls overlay
     const { idle } = useIdleHide(5000);
 
     const expData = EXPERIENCES.find(e => e.id === id);
@@ -89,6 +90,7 @@ export default function ShaderExperience() {
 
         if (!vs || !fs) {
             console.error("Failed to create shaders");
+            setShaderError(true);
             return;
         }
 
@@ -101,7 +103,7 @@ export default function ShaderExperience() {
         let count = 0;
 
         if (mode === 'points') {
-            const densityMultiplier = config.complexity ? Math.floor(config.complexity) : 2;
+            const densityMultiplier = config.complexity !== undefined ? Math.floor(config.complexity) : 2;
             count = 10000 * densityMultiplier;
             const particleIds = new Float32Array(count);
             for (let i = 0; i < count; i++) particleIds[i] = i;
@@ -176,7 +178,7 @@ export default function ShaderExperience() {
 
         // PRE-COMPUTE UNIFORM VALUES BEFORE RENDER LOOP
         // Optimize: compute static configs that don't change frame-to-frame
-        const timeScale = config.speed || 1.0;
+
         const configSpeed = config.speed || 1.0;
         const configIntensity = config.intensity || 1.0;
         const configComplexity = config.complexity || 2.0;
@@ -221,12 +223,10 @@ export default function ShaderExperience() {
             const deltaTime = (timestamp - lastTimestamp) * 0.001;
             lastTimestamp = timestamp;
 
-            shaderTime += deltaTime * timeScale;
+            shaderTime += deltaTime;
 
-            if (mode === 'points') {
-                gl.clearColor(0, 0, 0, 1);
-                gl.clear(gl.COLOR_BUFFER_BIT);
-            }
+            gl.clearColor(0, 0, 0, 1);
+            gl.clear(gl.COLOR_BUFFER_BIT);
 
             gl.uniform1f(uTime, shaderTime);
             gl.uniform2f(uRes, width, height);
@@ -238,9 +238,9 @@ export default function ShaderExperience() {
             if (uStardust) gl.uniform1f(uStardust, configStardust);
 
             // --- PASS NEW UNIFORMS ---
-            if (uScale && configZoom) gl.uniform1f(uScale, configZoom);
-            if (uZoom && configZoom) gl.uniform1f(uZoom, configZoom);
-            if (uSymmetry && configSymmetry) gl.uniform1f(uSymmetry, configSymmetry);
+            if (uScale && configZoom !== undefined) gl.uniform1f(uScale, configZoom);
+            if (uZoom && configZoom !== undefined) gl.uniform1f(uZoom, configZoom);
+            if (uSymmetry && configSymmetry !== undefined) gl.uniform1f(uSymmetry, configSymmetry);
 
             if (uCameraMode) gl.uniform1f(uCameraMode, camModeVal);
             if (uBlendMode) gl.uniform1f(uBlendMode, blendModeVal);
@@ -268,6 +268,7 @@ export default function ShaderExperience() {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(animationFrameId);
             gl.deleteProgram(program);
+            gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
     }, [config, briefingDone, id, shaderSource, vertexSource, mode, expData]);
 
@@ -275,6 +276,15 @@ export default function ShaderExperience() {
 
     // --- RENDER LOGIC ---
     // 1. If no config, show Lobby (which now includes comments/votes)
+    if (shaderError) {
+        return (
+            <div className="w-screen h-screen bg-black text-white flex flex-col items-center justify-center font-mono">
+                <p className="text-red-500 mb-4">Shader Compilation Failed</p>
+                <button onClick={() => navigate('/gallery')} className="underline hover:text-white/70">Return to Gallery</button>
+            </div>
+        );
+    }
+
     if (!config) {
         return (
             <ExperienceLobby
@@ -285,7 +295,7 @@ export default function ShaderExperience() {
                     setConfig(settings);
                     // Briefing starts after lobby launch
                 }}
-                onBack={() => navigate('/gallery')}
+                onBack={() => navigate(expData?.master ? `/gallery/${expData.master}` : '/gallery')}
             />
         );
     }
