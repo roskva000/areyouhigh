@@ -174,12 +174,53 @@ export default function ShaderExperience() {
         let lastTimestamp = 0;
         let shaderTime = 0;
 
+        // PRE-COMPUTE UNIFORM VALUES BEFORE RENDER LOOP
+        // Optimize: compute static configs that don't change frame-to-frame
+        const timeScale = config.speed || 1.0;
+        const configSpeed = config.speed || 1.0;
+        const configIntensity = config.intensity || 1.0;
+        const configComplexity = config.complexity || 2.0;
+        const configGlitch = config.glitch || 0.0;
+        const configStardust = config.stardust || 0.0;
+        const configZoom = config.zoom;
+        const configSymmetry = config.symmetry;
+
+        const camModeMap = { 'cinematic': 0.0, 'freefall': 1.0, 'chaotic': 2.0 };
+        const camModeVal = camModeMap[config.cameraMode] || 0.0;
+
+        const blendModeMap = { 'additive': 0.0, 'subtractive': 1.0 };
+        const blendModeVal = blendModeMap[config.blendMode] || 0.0;
+
+        const colors = config.palette?.colors || ['#ffffff', '#888888', '#000000'];
+        const c1 = hexToRgb(colors[0]);
+        const c2 = hexToRgb(colors[1]);
+        const c3 = hexToRgb(colors[2]);
+
+        // Pre-compute extra parameters to avoid iterating Object.keys every frame
+        const activeParams = [];
+        if (expData.params) {
+            Object.keys(expData.params).forEach(key => {
+                const loc = extraParamLocations[key];
+                if (loc) {
+                    // Check if this key is one of our "universal" overrides
+                    if (key === 'scale' && config.zoom) return;
+                    if (key === 'zoom' && config.zoom) return;
+                    if (key === 'symmetry' && config.symmetry) return;
+                    if (key === 'complexity' && config.complexity) return;
+
+                    activeParams.push({
+                        loc: loc,
+                        val: expData.params[key]
+                    });
+                }
+            });
+        }
+
         const render = (timestamp) => {
             if (!lastTimestamp) lastTimestamp = timestamp;
             const deltaTime = (timestamp - lastTimestamp) * 0.001;
             lastTimestamp = timestamp;
 
-            const timeScale = config.speed || 1.0;
             shaderTime += deltaTime * timeScale;
 
             if (mode === 'points') {
@@ -189,49 +230,28 @@ export default function ShaderExperience() {
 
             gl.uniform1f(uTime, shaderTime);
             gl.uniform2f(uRes, width, height);
-            gl.uniform1f(uSpeed, config.speed || 1.0);
-            gl.uniform1f(uIntensity, config.intensity || 1.0);
+            gl.uniform1f(uSpeed, configSpeed);
+            gl.uniform1f(uIntensity, configIntensity);
 
-            if (uComplexity) gl.uniform1f(uComplexity, config.complexity || 2.0);
-            if (uGlitch) gl.uniform1f(uGlitch, config.glitch || 0.0);
-            if (uStardust) gl.uniform1f(uStardust, config.stardust || 0.0);
+            if (uComplexity) gl.uniform1f(uComplexity, configComplexity);
+            if (uGlitch) gl.uniform1f(uGlitch, configGlitch);
+            if (uStardust) gl.uniform1f(uStardust, configStardust);
 
             // --- PASS NEW UNIFORMS ---
-            // Fallback to config if present, otherwise ignore (shader might use default or extraParam)
-            if (uScale && config.zoom) gl.uniform1f(uScale, config.zoom);
-            if (uZoom && config.zoom) gl.uniform1f(uZoom, config.zoom); // Some shaders use u_zoom, some u_scale
-            if (uSymmetry && config.symmetry) gl.uniform1f(uSymmetry, config.symmetry);
+            if (uScale && configZoom) gl.uniform1f(uScale, configZoom);
+            if (uZoom && configZoom) gl.uniform1f(uZoom, configZoom);
+            if (uSymmetry && configSymmetry) gl.uniform1f(uSymmetry, configSymmetry);
 
-            const camModeMap = { 'cinematic': 0.0, 'freefall': 1.0, 'chaotic': 2.0 };
-            if (uCameraMode) gl.uniform1f(uCameraMode, camModeMap[config.cameraMode] || 0.0);
-
-            const blendModeMap = { 'additive': 0.0, 'subtractive': 1.0 };
-            if (uBlendMode) gl.uniform1f(uBlendMode, blendModeMap[config.blendMode] || 0.0);
-
-            const colors = config.palette?.colors || ['#ffffff', '#888888', '#000000'];
-            const c1 = hexToRgb(colors[0]);
-            const c2 = hexToRgb(colors[1]);
-            const c3 = hexToRgb(colors[2]);
+            if (uCameraMode) gl.uniform1f(uCameraMode, camModeVal);
+            if (uBlendMode) gl.uniform1f(uBlendMode, blendModeVal);
 
             gl.uniform3f(uCol1, c1[0], c1[1], c1[2]);
             gl.uniform3f(uCol2, c2[0], c2[1], c2[2]);
             gl.uniform3f(uCol3, c3[0], c3[1], c3[2]);
 
-            // Pass default params unless overridden by our new universal controls
-            if (expData.params) {
-                Object.keys(expData.params).forEach(key => {
-                    const loc = extraParamLocations[key];
-                    if (loc) {
-                        // Check if this key is one of our "universal" overrides
-                        if (key === 'scale' && config.zoom) return; // Skip, let config.zoom handle u_scale
-                        if (key === 'zoom' && config.zoom) return;  // Skip, let config.zoom handle u_zoom
-                        if (key === 'symmetry' && config.symmetry) return; // Skip, let config.symmetry handle u_symmetry
-                        if (key === 'complexity' && config.complexity) return; // Skip
-
-                        // Otherwise pass the default static param
-                        gl.uniform1f(loc, expData.params[key]);
-                    }
-                });
+            // Pass pre-computed extra params with a fast for loop
+            for (let i = 0; i < activeParams.length; i++) {
+                gl.uniform1f(activeParams[i].loc, activeParams[i].val);
             }
 
             if (mode === 'points') {

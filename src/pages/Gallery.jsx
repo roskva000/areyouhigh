@@ -17,7 +17,7 @@ export default function Gallery() {
 
     useEffect(() => {
         const fetchVotes = async () => {
-            const { data, error } = await supabase.rpc('get_all_likes');
+            const { data } = await supabase.rpc('get_all_likes');
             if (data) {
                 const votesMap = {};
                 data.forEach(row => {
