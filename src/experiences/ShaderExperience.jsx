@@ -101,6 +101,7 @@ export default function ShaderExperience() {
 
         // --- ATTRIBUTE SETUP ---
         let count = 0;
+        let activeBuffer = null;
 
         if (mode === 'points') {
             const densityMultiplier = config.complexity !== undefined ? Math.floor(config.complexity) : 2;
@@ -108,7 +109,8 @@ export default function ShaderExperience() {
             const particleIds = new Float32Array(count);
             for (let i = 0; i < count; i++) particleIds[i] = i;
 
-            const idBuffer = gl.createBuffer();
+            activeBuffer = gl.createBuffer();
+            const idBuffer = activeBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, idBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, particleIds, gl.STATIC_DRAW);
 
@@ -118,7 +120,8 @@ export default function ShaderExperience() {
 
         } else {
             const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
-            const buffer = gl.createBuffer();
+            activeBuffer = gl.createBuffer();
+            const buffer = activeBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
@@ -268,6 +271,9 @@ export default function ShaderExperience() {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(animationFrameId);
             gl.deleteProgram(program);
+            if (vs) gl.deleteShader(vs);
+            if (fs) gl.deleteShader(fs);
+            if (activeBuffer) gl.deleteBuffer(activeBuffer);
             gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
     }, [config, briefingDone, id, shaderSource, vertexSource, mode, expData]);
