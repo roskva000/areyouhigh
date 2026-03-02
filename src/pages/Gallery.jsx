@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -112,7 +112,7 @@ export default function Gallery() {
         return () => ctx.revert();
     }, [activeCategory, allVotes]); // Re-animate when votes load/change sort
 
-    const handleCardClick = (group) => {
+    const handleCardClick = React.useCallback((group) => {
         if (group.isSpecial) {
             // Special experiences navigate directly to the experience
             navigate(`/experience/${group.items[0].id}`);
@@ -120,7 +120,7 @@ export default function Gallery() {
             // Groups navigate to the collection page
             navigate(`/gallery/${group.id}`);
         }
-    };
+    }, [navigate]);
 
     return (
         <div className="relative w-full min-h-screen bg-background antialiased overflow-x-hidden selection:bg-accent/30 selection:text-white">
@@ -199,7 +199,8 @@ export default function Gallery() {
                                 isSpecial={group.isSpecial}
                                 variantCount={count}
                                 likeCount={group.totalLikes}
-                                onClick={() => handleCardClick(group)}
+                                onClick={handleCardClick}
+                                group={group}
                             />
                         );
                     })}
