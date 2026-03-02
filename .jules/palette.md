@@ -1,0 +1,3 @@
+## 2024-05-24 - Accessibility Blindspots in WebGL Interfaces
+**Learning:** Visual-heavy / WebGL interfaces often rely extensively on minimal UI patterns like icon-only buttons (Back, Submit logs) and unlabelled native range sliders for fine-grained shader control (Zoom, Intensity, Symmetry, Glitch). These stylistic choices create significant screen reader blindspots, breaking keyboard and non-visual navigability.
+**Action:** When working on "immersive" visual elements, proactively mandate explicit `aria-label` attributes on all icon-only interactions and native custom inputs (`<input type="range">`), particularly those tied to complex state updates or system overrides.
