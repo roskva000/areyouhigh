@@ -66,13 +66,14 @@ const Tooltip = ({ text, children }) => {
 
 // --- SUB-COMPONENTS ---
 function LobbyVotes({ experienceId }) {
-    const { likes, userVote, handleVote } = useVotes(experienceId);
+    const { likes, userVote, handleVote, isVoting } = useVotes(experienceId);
 
     return (
         <div className="flex items-center gap-3">
             <button
                 onClick={() => handleVote('like')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                disabled={isVoting}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsUp size={14} className={userVote === 'like' ? 'fill-current' : ''} />
                 <span className="font-mono text-[10px]">{likes}</span>
@@ -80,7 +81,8 @@ function LobbyVotes({ experienceId }) {
 
             <button
                 onClick={() => handleVote('dislike')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                disabled={isVoting}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsDown size={14} className={userVote === 'dislike' ? 'fill-current' : ''} />
                  {userVote === 'dislike' && <span className="font-mono text-[10px]">1</span>}
@@ -90,7 +92,7 @@ function LobbyVotes({ experienceId }) {
 }
 
 function ArtifactLogs({ experienceId }) {
-    const { comments, postComment, currentNickname } = useComments(experienceId);
+    const { comments, postComment, currentNickname, isSubmitting } = useComments(experienceId);
     const [newComment, setNewComment] = useState('');
     const commentsEndRef = useRef(null);
 
@@ -102,10 +104,10 @@ function ArtifactLogs({ experienceId }) {
         scrollToBottom();
     }, [comments]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
-        postComment(newComment);
+        if (!newComment.trim() || isSubmitting) return;
+        await postComment(newComment);
         setNewComment('');
     };
 
@@ -140,11 +142,12 @@ function ArtifactLogs({ experienceId }) {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={`Log entry as ${currentNickname}...`}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20"
+                    disabled={isSubmitting}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                     type="submit"
-                    disabled={!newComment.trim()}
+                    disabled={!newComment.trim() || isSubmitting}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
                 >
                     <Send size={14} />
