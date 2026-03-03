@@ -29,8 +29,8 @@ export default function Gallery() {
         fetchVotes();
     }, []);
 
-    // Group experiences by Master Shader
-    const masterGroups = useMemo(() => {
+    // Group experiences by Master Shader - Static, run once
+    const baseGroups = useMemo(() => {
         const groups = {};
         EXPERIENCES.forEach(exp => {
             if (!groups[exp.master]) {
@@ -39,13 +39,9 @@ export default function Gallery() {
             groups[exp.master].push(exp);
         });
 
-        // Convert map to array for sorting/filtering
         return Object.keys(groups).map(key => {
             const items = groups[key];
             const isSpecial = key.startsWith('special_');
-
-            // For special/featured items (singletons), use their exact title
-            // For groups, format the master key
             let title = items[0].title;
             if (!isSpecial) {
                 title = key
@@ -53,45 +49,50 @@ export default function Gallery() {
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
             }
-
-            // Calculate total likes for the group
-            const totalLikes = items.reduce((sum, item) => {
-                return sum + (allVotes[item.id] || 0);
-            }, 0);
-
             return {
-                id: key, // Master Key
+                id: key,
                 isSpecial,
-                title: title,
+                title,
                 category: items[0].category,
-                items: items,
-                thumbId: items[0].thumbId, // Use the first item's thumb
+                items,
+                thumbId: items[0].thumbId,
                 accent: items[0].accent,
-                totalLikes: totalLikes
             };
         });
-    }, [allVotes]);
+    }, []);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // Combine static groups with dynamic votes
+    const masterGroups = useMemo(() => {
+        return baseGroups.map(group => {
+            const totalLikes = group.items.reduce((sum, item) => {
+                return sum + (allVotes[item.id] || 0);
+            }, 0);
+            return { ...group, totalLikes };
+        });
+    }, [baseGroups, allVotes]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    const categories = useMemo(() => ['All', ...new Set(masterGroups.map(g => g.category))], [masterGroups]);
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    // Optimize filtering and sorting by memoizing derived state based on search/category inputs
+    const sortedGroups = useMemo(() => {
+        const searchLower = search.toLowerCase();
+
+        const filtered = masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+
+        return filtered.sort((a, b) => {
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);

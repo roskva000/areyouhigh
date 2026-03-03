@@ -1,21 +1,21 @@
 from playwright.sync_api import sync_playwright
 
-def verify_gallery():
+def test_gallery(page):
+    page.goto("http://localhost:5173/gallery")
+    page.wait_for_selector(".gallery-card")
+    page.screenshot(path="verification/gallery.png")
+
+    # Type in search bar
+    search_input = page.locator("input[placeholder='Search algorithms...']")
+    search_input.fill("fractal")
+    page.wait_for_timeout(1000)
+    page.screenshot(path="verification/gallery-search.png")
+
+if __name__ == "__main__":
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         try:
-            # Navigate to gallery where ExperienceCard is used
-            page.goto("http://localhost:5173/gallery")
-            # Wait for gallery to load
-            page.wait_for_selector(".gallery-card")
-            # Take a full page screenshot
-            page.screenshot(path="verification/gallery_with_memo.png", full_page=True)
-            print("Screenshot saved to verification/gallery_with_memo.png")
-        except Exception as e:
-            print(f"Error during verification: {e}")
+            test_gallery(page)
         finally:
             browser.close()
-
-if __name__ == "__main__":
-    verify_gallery()
