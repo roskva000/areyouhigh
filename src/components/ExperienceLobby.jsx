@@ -150,6 +150,7 @@ function ArtifactLogs({ experienceId }) {
                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
+                    aria-label="Submit log entry"
                     type="submit"
                     disabled={!newComment.trim() || isSubmitting}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
@@ -311,6 +312,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             </div>
                             <Tooltip text="Adjusts the scale of the fractal universe">
                                 <input
+                                    aria-label="Zoom Scale"
                                     type="range"
                                     min="0.1"
                                     max="5.0"
@@ -332,6 +334,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             </div>
                              <Tooltip text="Number of geometric repetitions">
                                 <input
+                                    aria-label="Geometry Symmetry"
                                     type="range"
                                     min="1.0"
                                     max="20.0"
@@ -412,6 +415,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                 </div>
                                 <Tooltip text="Controls the overall brightness and power">
                                     <input
+                                        aria-label="Intensity"
                                         type="range"
                                         min="0.1"
                                         max="3.0"
@@ -431,6 +435,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                 </div>
                                 <Tooltip text="Introduces digital artifacts and signal noise">
                                     <input
+                                        aria-label="Digital Glitch"
                                         type="range"
                                         min="0.0"
                                         max="1.0"
@@ -502,6 +507,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4 md:mb-6 shrink-0 z-10 relative">
                     <button
+                        aria-label="Back to previous screen"
                         onClick={onBack}
                         className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all hover:scale-105 active:scale-95 group"
                     >

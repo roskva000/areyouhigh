@@ -155,6 +155,7 @@ export default function Gallery() {
                         <div className="relative group">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/20 group-focus-within:text-accent transition-colors" size={18} />
                             <input
+                                aria-label="Search algorithms"
                                 type="text"
                                 placeholder="Search algorithms..."
                                 value={search}
