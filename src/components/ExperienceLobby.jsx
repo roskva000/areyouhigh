@@ -71,6 +71,7 @@ function LobbyVotes({ experienceId }) {
     return (
         <div className="flex items-center gap-3">
             <button
+                aria-label={`Like experience. Currently ${likes} likes`}
                 disabled={isVoting}
                 onClick={() => handleVote('like')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
@@ -80,6 +81,7 @@ function LobbyVotes({ experienceId }) {
             </button>
 
             <button
+                aria-label="Dislike experience"
                 disabled={isVoting}
                 onClick={() => handleVote('dislike')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}

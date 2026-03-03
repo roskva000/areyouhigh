@@ -1,3 +1,3 @@
-## 2024-05-24 - Accessibility Blindspots in WebGL Interfaces
-**Learning:** Visual-heavy / WebGL interfaces often rely extensively on minimal UI patterns like icon-only buttons (Back, Submit logs) and unlabelled native range sliders for fine-grained shader control (Zoom, Intensity, Symmetry, Glitch). These stylistic choices create significant screen reader blindspots, breaking keyboard and non-visual navigability.
-**Action:** When working on "immersive" visual elements, proactively mandate explicit `aria-label` attributes on all icon-only interactions and native custom inputs (`<input type="range">`), particularly those tied to complex state updates or system overrides.
+## 2024-05-24 - [ARIA label overrides inner text]
+**Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
+**Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
