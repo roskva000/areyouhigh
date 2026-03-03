@@ -84,7 +84,7 @@ export default function GlobalChat() {
             });
 
         if (error) {
-            console.error('Chat error:', error);
+            console.error('Failed to send chat message');
         }
     };
 

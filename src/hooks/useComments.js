@@ -62,9 +62,9 @@ export default function useComments(experienceId) {
                 });
 
             if (error) throw error;
-        } catch (err) {
+        } catch {
             console.error('Failed to post comment');
-            throw err;
+            throw new Error('Failed to post comment');
         } finally {
             setIsSubmitting(false);
         }
