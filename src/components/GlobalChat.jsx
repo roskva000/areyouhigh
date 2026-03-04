@@ -76,22 +76,23 @@ export default function GlobalChat() {
         setNewMessage('');
         setCooldown(5); // 5 seconds cooldown
 
-        const { error } = await supabase
-            .from('global_chat')
-            .insert({
-                user_id: userId,
-                content: content.substring(0, 140)
-            });
+        try {
+            const { error } = await supabase
+                .from('global_chat')
+                .insert({
+                    user_id: userId,
+                    content: content.substring(0, 140)
+                });
 
-        if (error) {
-            console.error('Chat error:', error);
+            if (error) throw error;
+        } catch {
+            console.error('Chat error: transmission failed');
         }
     };
 
     // Force close if idle during experience
     useEffect(() => {
         if (isExperienceRoute && idle && isOpen) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsOpen(false);
         }
     }, [isExperienceRoute, idle, isOpen]);
