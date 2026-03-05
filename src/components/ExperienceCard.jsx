@@ -23,9 +23,11 @@ const ExperienceCard = ({
     };
 
     return (
-        <div
-            className="gallery-card group relative h-80 rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl"
+        <button
+            type="button"
+            className="gallery-card group relative h-80 w-full rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl text-left appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent focus-visible:border-accent"
             onClick={handleClick}
+            aria-label={`${title} deneyimini aç`}
         >
             {/* Dynamic Background Image */}
             <div className="absolute inset-0 z-0 bg-zinc-950">
@@ -85,7 +87,7 @@ const ExperienceCard = ({
                     <span className="font-mono text-[8px] uppercase tracking-widest text-white/80">Special</span>
                 </div>
             )}
-        </div>
+        </button>
     );
 };
 
