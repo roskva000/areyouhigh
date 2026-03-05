@@ -8,14 +8,18 @@ import { EXPERIENCES } from '../data/experiences';
 import { Search, ArrowLeft } from 'lucide-react';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
+import isSupabaseReady from '../lib/isSupabaseReady';
 
 export default function Gallery() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
     const [allVotes, setAllVotes] = useState({});
+    const supabaseReady = isSupabaseReady();
 
     useEffect(() => {
+        if (!supabaseReady) return;
+
         const fetchVotes = async () => {
             const { data } = await supabase.rpc('get_all_likes');
             if (data) {
@@ -27,7 +31,7 @@ export default function Gallery() {
             }
         };
         fetchVotes();
-    }, []);
+    }, [supabaseReady]);
 
     // Group experiences by Master Shader
     const masterGroups = useMemo(() => {
@@ -131,6 +135,12 @@ export default function Gallery() {
             <Navbar />
 
             <main className="relative z-10 pt-40 pb-32 px-6 md:px-16 container mx-auto">
+                {!supabaseReady && (
+                    <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 font-mono text-[11px] text-amber-200">
+                        Community features temporarily unavailable. Rankings are shown without live community data.
+                    </div>
+                )}
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
                     <div className="max-w-2xl">

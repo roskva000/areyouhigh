@@ -66,13 +66,14 @@ const Tooltip = ({ text, children }) => {
 
 // --- SUB-COMPONENTS ---
 function LobbyVotes({ experienceId }) {
-    const { likes, userVote, handleVote, isVoting } = useVotes(experienceId);
+    const { likes, userVote, handleVote, isVoting, isSupabaseReady: votesReady } = useVotes(experienceId);
 
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col items-start gap-2">
+            <div className="flex items-center gap-3">
             <button
                 aria-label={`Like experience. Currently ${likes} likes`}
-                disabled={isVoting}
+                disabled={!votesReady || isVoting}
                 onClick={() => handleVote('like')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
@@ -82,19 +83,23 @@ function LobbyVotes({ experienceId }) {
 
             <button
                 aria-label="Dislike experience"
-                disabled={isVoting}
+                disabled={!votesReady || isVoting}
                 onClick={() => handleVote('dislike')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsDown size={14} className={userVote === 'dislike' ? 'fill-current' : ''} />
                  {userVote === 'dislike' && <span className="font-mono text-[10px]">1</span>}
             </button>
+            </div>
+            {!votesReady && (
+                <p className="font-mono text-[9px] text-amber-200">Community features temporarily unavailable.</p>
+            )}
         </div>
     );
 }
 
 function ArtifactLogs({ experienceId }) {
-    const { comments, postComment, currentNickname, isSubmitting } = useComments(experienceId);
+    const { comments, postComment, currentNickname, isSubmitting, isSupabaseReady: commentsReady } = useComments(experienceId);
     const [newComment, setNewComment] = useState('');
     const commentsEndRef = useRef(null);
 
@@ -108,7 +113,7 @@ function ArtifactLogs({ experienceId }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!newComment.trim()) return;
+        if (!commentsReady || !newComment.trim()) return;
         try {
             await postComment(newComment);
             setNewComment('');
@@ -122,6 +127,12 @@ function ArtifactLogs({ experienceId }) {
             <h3 className="font-mono text-[10px] text-accent uppercase tracking-[0.2em] font-bold mb-3 flex items-center gap-2 shrink-0">
                 <MessageSquare size={12} /> Artifact Logs
             </h3>
+
+            {!commentsReady && (
+                <div className="mb-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 font-mono text-[9px] text-amber-200">
+                    Community features temporarily unavailable.
+                </div>
+            )}
 
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 mb-3 space-y-3 min-h-0">
                 {comments.length === 0 ? (
@@ -147,14 +158,14 @@ function ArtifactLogs({ experienceId }) {
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder={`Log entry as ${currentNickname}...`}
-                    disabled={isSubmitting}
+                    placeholder={!commentsReady ? 'Community features temporarily unavailable' : `Log entry as ${currentNickname}...`}
+                    disabled={!commentsReady || isSubmitting}
                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                     aria-label="Submit log entry"
                     type="submit"
-                    disabled={!newComment.trim() || isSubmitting}
+                    disabled={!commentsReady || !newComment.trim() || isSubmitting}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
                 >
                     <Send size={14} />

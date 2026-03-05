@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import isSupabaseReady from '../lib/isSupabaseReady';
 import useUserIdentity from './useUserIdentity';
 
 export default function useVotes(experienceId) {
@@ -7,9 +8,10 @@ export default function useVotes(experienceId) {
     const [likes, setLikes] = useState(0);
     const [userVote, setUserVote] = useState(null); // 'like' | 'dislike' | null
     const [isVoting, setIsVoting] = useState(false);
+    const supabaseReady = isSupabaseReady();
 
     useEffect(() => {
-        if (!experienceId || !userId) return;
+        if (!supabaseReady || !experienceId || !userId) return undefined;
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
         // Fetch total counts and user's vote
@@ -57,9 +59,11 @@ export default function useVotes(experienceId) {
             clearTimeout(debounceTimer);
             supabase.removeChannel(channel);
         };
-    }, [experienceId, userId]);
+    }, [experienceId, userId, supabaseReady]);
 
     const handleVote = async (type) => {
+        if (!supabaseReady || !experienceId) return;
+
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
         if (!userId || isVoting) return;
 
@@ -115,5 +119,5 @@ export default function useVotes(experienceId) {
         }
     };
 
-    return { likes, userVote, handleVote, isVoting };
+    return { likes, userVote, handleVote, isVoting, isSupabaseReady: supabaseReady };
 }

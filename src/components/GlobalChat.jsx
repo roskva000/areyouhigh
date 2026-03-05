@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import useIdleHide from '../hooks/useIdleHide';
 import { MessageCircle, X, Send } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import isSupabaseReady from '../lib/isSupabaseReady';
 import useUserIdentity from '../hooks/useUserIdentity';
 import gsap from 'gsap';
 
@@ -17,9 +18,12 @@ export default function GlobalChat() {
     const location = useLocation();
     const isExperienceRoute = location.pathname.startsWith('/experience/');
     const { idle } = useIdleHide(5000);
+    const supabaseReady = isSupabaseReady();
 
     // Fetch initial messages and subscribe
     useEffect(() => {
+        if (!supabaseReady) return undefined;
+
         const fetchMessages = async () => {
             const { data } = await supabase
                 .from('global_chat')
@@ -49,7 +53,7 @@ export default function GlobalChat() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [supabaseReady]);
 
     // Scroll to bottom on new message
     useEffect(() => {
@@ -70,7 +74,7 @@ export default function GlobalChat() {
 
     const handleSend = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() || !userId || cooldown > 0) return;
+        if (!supabaseReady || !newMessage.trim() || !userId || cooldown > 0) return;
 
         const content = newMessage.trim();
         setNewMessage('');
@@ -115,7 +119,7 @@ export default function GlobalChat() {
                 className={`fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] focus-visible:ring-2 focus-visible:ring-accent ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
             >
                 {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
-                {!isOpen && (
+                {!isOpen && supabaseReady && (
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
                 )}
             </button>
@@ -133,6 +137,12 @@ export default function GlobalChat() {
                     </span>
                     <span className="font-mono text-[8px] text-white/30">Anonymous Protocol</span>
                 </div>
+
+                {!supabaseReady && (
+                    <div className="px-3 py-2 border-b border-amber-500/20 bg-amber-500/10 font-mono text-[9px] text-amber-200">
+                        Community features temporarily unavailable.
+                    </div>
+                )}
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
@@ -170,15 +180,15 @@ export default function GlobalChat() {
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder={cooldown > 0 ? `Wait ${cooldown}s...` : "Transmit signal..."}
-                            disabled={cooldown > 0}
+                            placeholder={!supabaseReady ? 'Community features temporarily unavailable' : cooldown > 0 ? `Wait ${cooldown}s...` : 'Transmit signal...'}
+                            disabled={!supabaseReady || cooldown > 0}
                             maxLength={140}
                             className="w-full bg-black/50 border border-white/10 rounded-xl py-2.5 pl-3 pr-10 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <button
                             aria-label="Send message"
                             type="submit"
-                            disabled={!newMessage.trim() || cooldown > 0}
+                            disabled={!supabaseReady || !newMessage.trim() || cooldown > 0}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
                         >
                             <Send size={14} />
