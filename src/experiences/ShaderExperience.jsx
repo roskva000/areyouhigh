@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ExperienceLobby from '../components/ExperienceLobby';
 import BriefingOverlay from '../components/BriefingOverlay';
@@ -6,6 +6,37 @@ import useIdleHide from '../hooks/useIdleHide';
 import { EXPERIENCES } from '../data/experiences';
 import { MASTER_SHADERS } from '../data/shaders';
 import SEO from '../components/SEO';
+
+const TELEMETRY_ENDPOINT = '/api/telemetry';
+const LAUNCH_METRICS_KEY = 'shader_launch_metrics_v1';
+
+const readLaunchMetrics = () => {
+    try {
+        const parsed = JSON.parse(localStorage.getItem(LAUNCH_METRICS_KEY) || '{}');
+        return {
+            attempts: Number(parsed.attempts) || 0,
+            successes: Number(parsed.successes) || 0,
+            sessions: Number(parsed.sessions) || 0,
+            crashFree: Number(parsed.crashFree) || 0
+        };
+    } catch {
+        return { attempts: 0, successes: 0, sessions: 0, crashFree: 0 };
+    }
+};
+
+const writeLaunchMetrics = (metrics) => {
+    localStorage.setItem(LAUNCH_METRICS_KEY, JSON.stringify(metrics));
+};
+
+const inferGpuTier = (renderer = '', deviceMemory = 4, cores = 4, dpr = 1, thermalHint = 'normal') => {
+    const lowerRenderer = renderer.toLowerCase();
+    if (thermalHint === 'constrained') return 'low';
+    if (lowerRenderer.includes('swiftshader') || lowerRenderer.includes('intel(r) hd')) return 'low';
+    if (lowerRenderer.includes('rtx') || lowerRenderer.includes('radeon rx') || lowerRenderer.includes('apple m')) return 'high';
+    if (deviceMemory >= 8 && cores >= 8 && dpr <= 2) return 'high';
+    if (deviceMemory <= 2 || cores <= 4 || dpr >= 3) return 'low';
+    return 'mid';
+};
 
 // Standard Quad Vertex Shader
 const QUAD_VERTEX_SHADER = `
@@ -22,7 +53,11 @@ export default function ShaderExperience() {
     const [config, setConfig] = useState(null); // 'config' implies the lobby settings
     const [briefingDone, setBriefingDone] = useState(false);
     const [shaderError, setShaderError] = useState(false); // Controls overlay
+    const [safeMode, setSafeMode] = useState(false);
     const { idle } = useIdleHide(5000);
+    const sessionIdRef = useRef(globalThis.crypto?.randomUUID?.() || `${Date.now()}`);
+    const sessionStartRef = useRef(0);
+    const crashedRef = useRef(false);
 
     const expData = EXPERIENCES.find(e => e.id === id);
     const mode = expData?.mode || 'quad'; // 'quad' (default) or 'points'
@@ -46,6 +81,38 @@ export default function ShaderExperience() {
         }
     }
 
+    const sendTelemetry = useCallback((eventName, payload = {}) => {
+        const launchMetrics = readLaunchMetrics();
+        const launchSuccessRate = launchMetrics.attempts > 0 ? launchMetrics.successes / launchMetrics.attempts : 0;
+        const crashFreeSessions = launchMetrics.sessions > 0 ? launchMetrics.crashFree / launchMetrics.sessions : 0;
+
+        const body = {
+            eventName,
+            sessionId: sessionIdRef.current,
+            experienceId: id,
+            ts: Date.now(),
+            launchSuccessRate,
+            crashFreeSessions,
+            ...payload
+        };
+
+        try {
+            const serialized = JSON.stringify(body);
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(TELEMETRY_ENDPOINT, serialized);
+            } else {
+                fetch(TELEMETRY_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: serialized,
+                    keepalive: true
+                }).catch(() => undefined);
+            }
+        } catch {
+            // no-op: telemetry should never break rendering
+        }
+    }, [id]);
+
     useEffect(() => {
         // Only run WebGL setup if we have config (Lobby submitted) AND briefing is done
         if (!config || !briefingDone || !expData || !canvasRef.current) return;
@@ -53,6 +120,24 @@ export default function ShaderExperience() {
         const canvas = canvasRef.current;
         const gl = canvas.getContext('webgl');
         if (!gl) return;
+
+        const debugRendererInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        const renderer = debugRendererInfo ? gl.getParameter(debugRendererInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+        const deviceMemory = navigator.deviceMemory || 4;
+        const cores = navigator.hardwareConcurrency || 4;
+        const dpr = window.devicePixelRatio || 1;
+        const thermalHint = (navigator.connection?.saveData || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) ? 'constrained' : 'normal';
+        const gpuTier = inferGpuTier(renderer, deviceMemory, cores, dpr, thermalHint);
+        const deviceInfo = { renderer, deviceMemory, cores, dpr, gpuTier, thermalHint };
+
+        const quality = {
+            level: safeMode ? 0 : (gpuTier === 'high' ? 3 : gpuTier === 'mid' ? 2 : 1),
+            resolutionScale: safeMode ? 0.65 : (gpuTier === 'high' ? 1 : gpuTier === 'mid' ? 0.85 : 0.75),
+            effectsEnabled: !safeMode,
+            complexityScale: safeMode ? 0.6 : (gpuTier === 'high' ? 1 : gpuTier === 'mid' ? 0.85 : 0.7)
+        };
+
+        sendTelemetry('shader_session_bootstrap', { deviceInfo, safeMode });
 
         // --- WEBGL SETUP ---
         if (mode === 'points') {
@@ -71,13 +156,21 @@ export default function ShaderExperience() {
 
         let width, height;
         let animationFrameId;
+        let runtimeErrorLogged = false;
+        let lowFpsStreak = 0;
 
         const createShader = (gl, type, source) => {
             const shader = gl.createShader(type);
             gl.shaderSource(shader, source);
             gl.compileShader(shader);
             if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error("Shader compile error:", gl.getShaderInfoLog(shader));
+                const errorLog = gl.getShaderInfoLog(shader);
+                sendTelemetry('shader_compile_error', {
+                    errorCode: 'SHADER_COMPILE_FAILED',
+                    shaderId: type === gl.VERTEX_SHADER ? 'vertex' : 'fragment',
+                    deviceInfo,
+                    errorLog
+                });
                 gl.deleteShader(shader);
                 return null;
             }
@@ -89,7 +182,7 @@ export default function ShaderExperience() {
         const fs = createShader(gl, gl.FRAGMENT_SHADER, shaderSource);
 
         if (!vs || !fs) {
-            console.error("Failed to create shaders");
+            crashedRef.current = true;
             setShaderError(true);
             return;
         }
@@ -97,6 +190,17 @@ export default function ShaderExperience() {
         gl.attachShader(program, vs);
         gl.attachShader(program, fs);
         gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            sendTelemetry('shader_program_link_error', {
+                errorCode: 'SHADER_LINK_FAILED',
+                shaderId: expData.master,
+                deviceInfo,
+                errorLog: gl.getProgramInfoLog(program)
+            });
+            crashedRef.current = true;
+            setShaderError(true);
+            return;
+        }
         gl.useProgram(program);
 
         // --- ATTRIBUTE SETUP ---
@@ -104,7 +208,7 @@ export default function ShaderExperience() {
         let activeBuffer = null;
 
         if (mode === 'points') {
-            const densityMultiplier = config.complexity !== undefined ? Math.floor(config.complexity) : 2;
+            const densityMultiplier = config.complexity !== undefined ? Math.floor(config.complexity * quality.complexityScale) : 2;
             count = 10000 * densityMultiplier;
             const particleIds = new Float32Array(count);
             for (let i = 0; i < count; i++) particleIds[i] = i;
@@ -169,9 +273,9 @@ export default function ShaderExperience() {
         const onResize = () => {
             width = window.innerWidth;
             height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-            gl.viewport(0, 0, width, height);
+            canvas.width = Math.max(1, Math.floor(width * dpr * quality.resolutionScale));
+            canvas.height = Math.max(1, Math.floor(height * dpr * quality.resolutionScale));
+            gl.viewport(0, 0, canvas.width, canvas.height);
         };
         window.addEventListener('resize', onResize);
         onResize();
@@ -221,10 +325,35 @@ export default function ShaderExperience() {
             });
         }
 
+        sessionStartRef.current = performance.now();
+        writeLaunchMetrics({ ...readLaunchMetrics(), successes: readLaunchMetrics().successes + 1 });
+        sendTelemetry('experience_launch_success', { deviceInfo, shaderId: expData.master, safeMode });
+
+        const reduceQuality = () => {
+            if (quality.level <= 0) return;
+            quality.level -= 1;
+            quality.resolutionScale = Math.max(0.6, quality.resolutionScale - 0.12);
+            quality.complexityScale = Math.max(0.55, quality.complexityScale - 0.1);
+            if (quality.level <= 1) quality.effectsEnabled = false;
+            onResize();
+            sendTelemetry('auto_quality_reduction', {
+                deviceInfo,
+                level: quality.level,
+                resolutionScale: quality.resolutionScale,
+                effectsEnabled: quality.effectsEnabled
+            });
+        };
+
         const render = (timestamp) => {
             if (!lastTimestamp) lastTimestamp = timestamp;
             const deltaTime = (timestamp - lastTimestamp) * 0.001;
             lastTimestamp = timestamp;
+            const fps = deltaTime > 0 ? 1 / deltaTime : 60;
+            lowFpsStreak = fps < 42 ? lowFpsStreak + 1 : Math.max(0, lowFpsStreak - 1);
+            if (lowFpsStreak > 45) {
+                reduceQuality();
+                lowFpsStreak = 0;
+            }
 
             shaderTime += deltaTime;
 
@@ -232,13 +361,13 @@ export default function ShaderExperience() {
             gl.clear(gl.COLOR_BUFFER_BIT);
 
             gl.uniform1f(uTime, shaderTime);
-            gl.uniform2f(uRes, width, height);
+            gl.uniform2f(uRes, canvas.width, canvas.height);
             gl.uniform1f(uSpeed, configSpeed);
             gl.uniform1f(uIntensity, configIntensity);
 
-            if (uComplexity) gl.uniform1f(uComplexity, configComplexity);
-            if (uGlitch) gl.uniform1f(uGlitch, configGlitch);
-            if (uStardust) gl.uniform1f(uStardust, configStardust);
+            if (uComplexity) gl.uniform1f(uComplexity, configComplexity * quality.complexityScale);
+            if (uGlitch) gl.uniform1f(uGlitch, quality.effectsEnabled ? configGlitch : 0.0);
+            if (uStardust) gl.uniform1f(uStardust, quality.effectsEnabled ? configStardust : 0.0);
 
             // --- PASS NEW UNIFORMS ---
             if (uScale && configZoom !== undefined) gl.uniform1f(uScale, configZoom);
@@ -263,6 +392,17 @@ export default function ShaderExperience() {
                 gl.drawArrays(gl.TRIANGLES, 0, count);
             }
 
+            const glError = gl.getError();
+            if (glError !== gl.NO_ERROR && !runtimeErrorLogged) {
+                runtimeErrorLogged = true;
+                crashedRef.current = true;
+                sendTelemetry('shader_runtime_error', {
+                    errorCode: `GL_ERROR_${glError}`,
+                    shaderId: expData.master,
+                    deviceInfo
+                });
+            }
+
             animationFrameId = requestAnimationFrame(render);
         };
         animationFrameId = requestAnimationFrame(render);
@@ -270,13 +410,26 @@ export default function ShaderExperience() {
         return () => {
             window.removeEventListener('resize', onResize);
             cancelAnimationFrame(animationFrameId);
+            const durationMs = sessionStartRef.current ? Math.round(performance.now() - sessionStartRef.current) : 0;
+            const metrics = readLaunchMetrics();
+            writeLaunchMetrics({
+                ...metrics,
+                sessions: metrics.sessions + 1,
+                crashFree: metrics.crashFree + (crashedRef.current ? 0 : 1)
+            });
+            sendTelemetry('experience_session_end', {
+                sessionDurationMs: durationMs,
+                crashed: crashedRef.current,
+                shaderId: expData.master,
+                deviceInfo
+            });
             gl.deleteProgram(program);
             if (vs) gl.deleteShader(vs);
             if (fs) gl.deleteShader(fs);
             if (activeBuffer) gl.deleteBuffer(activeBuffer);
             gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
-    }, [config, briefingDone, id, shaderSource, vertexSource, mode, expData]);
+    }, [config, briefingDone, id, shaderSource, vertexSource, mode, expData, safeMode, sendTelemetry]);
 
     if (!expData) return <div className="w-screen h-screen bg-black text-white flex items-center justify-center font-mono">Experience not found</div>;
 
@@ -298,6 +451,10 @@ export default function ShaderExperience() {
                 description={expData.desc}
                 experienceId={id} // Pass ID for comments/votes
                 onLaunch={(settings) => {
+                    const metrics = readLaunchMetrics();
+                    writeLaunchMetrics({ ...metrics, attempts: metrics.attempts + 1 });
+                    crashedRef.current = false;
+                    sendTelemetry('experience_launch_attempt', { shaderId: expData.master, safeMode });
                     setConfig(settings);
                     // Briefing starts after lobby launch
                 }}
@@ -327,6 +484,13 @@ export default function ShaderExperience() {
                 className={`absolute top-6 left-6 z-50 font-mono text-xs text-white/50 hover:text-white transition-all duration-700 uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full border border-white/10 backdrop-blur-md ${idle ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
             >
                 &larr; Return to Lobby
+            </button>
+
+            <button
+                onClick={() => setSafeMode((prev) => !prev)}
+                className={`absolute top-6 right-6 z-50 font-mono text-xs transition-all duration-500 uppercase tracking-widest px-4 py-2 rounded-full border backdrop-blur-md ${safeMode ? 'text-lime-300 border-lime-400/50 bg-lime-500/15' : 'text-white/70 border-white/20 bg-black/30 hover:bg-black/50'} ${idle ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            >
+                {safeMode ? 'Safe Mode: On' : 'Safe Mode'}
             </button>
 
             <canvas ref={canvasRef} className="w-full h-full block filter contrast-[1.2] saturate-[1.1]"></canvas>
