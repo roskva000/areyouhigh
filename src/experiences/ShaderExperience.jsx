@@ -208,7 +208,9 @@ export default function ShaderExperience() {
         let activeBuffer = null;
 
         if (mode === 'points') {
-            const densityMultiplier = config.complexity !== undefined ? Math.floor(config.complexity * quality.complexityScale) : 2;
+            const densityMultiplier = config.complexity !== undefined
+                ? Math.max(1, Math.floor(config.complexity * quality.complexityScale))
+                : 2;
             count = 10000 * densityMultiplier;
             const particleIds = new Float32Array(count);
             for (let i = 0; i < count; i++) particleIds[i] = i;
