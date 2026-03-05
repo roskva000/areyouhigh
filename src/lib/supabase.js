@@ -1,10 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables')
+const hasSupabaseConfig = Boolean(supabaseUrl && supabaseKey);
+
+if (!hasSupabaseConfig) {
+    console.warn('Supabase environment variables are missing. Community features are disabled.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = hasSupabaseConfig
+    ? createClient(supabaseUrl, supabaseKey)
+    : null;

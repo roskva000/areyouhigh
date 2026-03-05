@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import isSupabaseReady from '../lib/isSupabaseReady';
 import useUserIdentity from './useUserIdentity';
 
 export default function useComments(experienceId) {
     const { userId, nickname } = useUserIdentity();
     const [comments, setComments] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const supabaseReady = isSupabaseReady();
 
     useEffect(() => {
-        if (!experienceId) return;
+        if (!supabaseReady || !experienceId) return undefined;
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
         const fetchComments = async () => {
@@ -43,9 +45,11 @@ export default function useComments(experienceId) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [experienceId]);
+    }, [experienceId, supabaseReady]);
 
     const postComment = async (content) => {
+        if (!supabaseReady || !experienceId) return;
+
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
         if (!userId || !content.trim() || isSubmitting) return;
 
@@ -70,5 +74,5 @@ export default function useComments(experienceId) {
         }
     };
 
-    return { comments, postComment, currentNickname: nickname, isSubmitting };
+    return { comments, postComment, currentNickname: nickname, isSubmitting, isSupabaseReady: supabaseReady };
 }
