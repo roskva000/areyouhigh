@@ -12,3 +12,7 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+
+## 2024-05-23 - Separating Static and Dynamic React State
+**Learning:** Found significant main thread blocking in `Gallery.jsx` because complex filtering and sorting logic, combined with mapping over static configuration arrays (`EXPERIENCES`), was being re-run on every render and keystroke. Typing in the search bar felt slow because mapping the base objects, deriving total likes, fetching categories, filtering, and sorting were all synchronous operations.
+**Action:** Always strictly separate static/invariant data derivation from dynamic state calculations. Use `useMemo` with an empty dependency array for base group definitions. Use targeted `useMemo` hooks for dynamic data (like mixing in votes), filtering, and sorting to prevent expensive operations from blocking user input.
