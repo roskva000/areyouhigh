@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -20,6 +20,10 @@ export default function MasterCollection() {
         .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
+
+    const handleCardClick = useCallback((exp) => {
+        navigate(`/experience/${exp.id}`);
+    }, [navigate]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -91,7 +95,8 @@ export default function MasterCollection() {
                                 isSpecial={false}
                                 variantCount={0}
                                 index={index + 1}
-                                onClick={() => navigate(`/experience/${exp.id}`)}
+                                onClick={handleCardClick}
+                                group={exp}
                             />
                         );
                     })}

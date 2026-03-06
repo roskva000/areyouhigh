@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layers, Heart } from 'lucide-react';
 
-export default function ExperienceCard({
+const ExperienceCard = ({
     title,
     category,
     thumbId,
@@ -11,12 +11,23 @@ export default function ExperienceCard({
     variantCount = 0,
     likeCount = 0,
     onClick,
+    group,
     index = 0
-}) {
+}) => {
+    const handleClick = () => {
+        if (onClick && group) {
+            onClick(group);
+        } else if (onClick) {
+            onClick();
+        }
+    };
+
     return (
-        <div
-            className="gallery-card group relative h-80 rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl"
-            onClick={onClick}
+        <button
+            type="button"
+            className="gallery-card group relative h-80 w-full rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl text-left appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent focus-visible:border-accent"
+            onClick={handleClick}
+            aria-label={`${title} deneyimini aç`}
         >
             {/* Dynamic Background Image */}
             <div className="absolute inset-0 z-0 bg-zinc-950">
@@ -76,6 +87,8 @@ export default function ExperienceCard({
                     <span className="font-mono text-[8px] uppercase tracking-widest text-white/80">Special</span>
                 </div>
             )}
-        </div>
+        </button>
     );
-}
+};
+
+export default React.memo(ExperienceCard);

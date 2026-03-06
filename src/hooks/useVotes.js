@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import isSupabaseReady from '../lib/isSupabaseReady';
 import useUserIdentity from './useUserIdentity';
 
 export default function useVotes(experienceId) {
     const { userId } = useUserIdentity();
     const [likes, setLikes] = useState(0);
     const [userVote, setUserVote] = useState(null); // 'like' | 'dislike' | null
+    const [isVoting, setIsVoting] = useState(false);
+    const supabaseReady = isSupabaseReady();
 
     useEffect(() => {
-        if (!experienceId || !userId) return;
+        if (!supabaseReady || !experienceId || !userId) return undefined;
+        const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
         // Fetch total counts and user's vote
         const fetchVotes = async () => {
             // Get totals using the RPC function we created
             const { data: counts } = await supabase
-                .rpc('get_experience_votes', { exp_id: experienceId });
+                .rpc('get_experience_votes', { exp_id: safeExperienceId });
 
             if (counts && counts.length > 0) {
                 setLikes(counts[0].likes);
@@ -24,7 +28,7 @@ export default function useVotes(experienceId) {
             const { data: myVote } = await supabase
                 .from('votes')
                 .select('vote_type')
-                .eq('experience_id', experienceId)
+                .eq('experience_id', safeExperienceId)
                 .eq('user_id', userId)
                 .single();
 
@@ -36,24 +40,34 @@ export default function useVotes(experienceId) {
         fetchVotes();
 
         // Subscribe to changes (simple: refetch totals on any change to this experience)
+        let debounceTimer;
         const channel = supabase
-            .channel(`votes:${experienceId}`)
+            .channel(`votes:${safeExperienceId}`)
             .on(
                 'postgres_changes',
-                { event: '*', schema: 'public', table: 'votes', filter: `experience_id=eq.${experienceId}` },
+                { event: '*', schema: 'public', table: 'votes', filter: `experience_id=eq.${safeExperienceId}` },
                 () => {
-                    fetchVotes();
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(() => {
+                        fetchVotes();
+                    }, 1000);
                 }
             )
             .subscribe();
 
         return () => {
+            clearTimeout(debounceTimer);
             supabase.removeChannel(channel);
         };
-    }, [experienceId, userId]);
+    }, [experienceId, userId, supabaseReady]);
 
     const handleVote = async (type) => {
-        if (!userId) return;
+        if (!supabaseReady || !experienceId) return;
+
+        const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
+        if (!userId || isVoting) return;
+
+        setIsVoting(true);
 
         // Optimistic UI update
         const previousVote = userVote;
@@ -74,24 +88,36 @@ export default function useVotes(experienceId) {
         }
 
         // Database operation
-        if (userVote === type) {
-            // Remove vote
-            await supabase
+        const previousLikes = likes;
+        try {
+            if (userVote === type) {
+                // Remove vote
+                const { error } = await supabase
                 .from('votes')
                 .delete()
-                .eq('experience_id', experienceId)
+                .eq('experience_id', safeExperienceId)
                 .eq('user_id', userId);
-        } else {
-            // Upsert new vote
-            await supabase
+                if (error) throw error;
+            } else {
+                // Upsert new vote
+                const { error } = await supabase
                 .from('votes')
                 .upsert({
-                    experience_id: experienceId,
+                    experience_id: safeExperienceId,
                     user_id: userId,
                     vote_type: type
                 }, { onConflict: 'experience_id, user_id' });
+                if (error) throw error;
+            }
+        } catch {
+            console.error('Vote operation failed');
+            // Rollback optimistic update
+            setUserVote(previousVote);
+            setLikes(previousLikes);
+        } finally {
+            setIsVoting(false);
         }
     };
 
-    return { likes, userVote, handleVote };
+    return { likes, userVote, handleVote, isVoting, isSupabaseReady: supabaseReady };
 }

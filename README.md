@@ -79,3 +79,18 @@ uHigh is an immersive, shader-driven web application designed to provide a trans
 ---
 
 *“Dive into the infinite depth. Experience the geometry of a limitless dimension.”*
+
+## 🧾 Content Pipeline
+
+- Primary experience content is schema-driven at `src/data/content/experiences.schema.json`.
+- Runtime compatibility is preserved through `src/data/experiences.js`, which maps schema sections into legacy fields.
+- Build-time source selection is available via `VITE_EXPERIENCE_SOURCE`:
+  - `json` (default)
+  - `db`
+  - `cms`
+
+Validate content integrity before release:
+
+```bash
+npm run validate:content
+```

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender-light.cjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "validate:content": "node scripts/validate-experiences.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

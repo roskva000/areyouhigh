@@ -56,7 +56,7 @@ export default function Philosophy() {
 
                 <p className="reveal-line font-sans text-3xl md:text-5xl lg:text-7xl font-bold tracking-tighter text-text leading-tight">
                     We focus on: <br />
-                    <span className="font-drama italic text-accent text-6xl md:text-8xl lg:text-[8rem] leading-[0.8] block mt-4">
+                    <span className="font-drama italic text-accent text-5xl md:text-8xl lg:text-[8rem] leading-[0.8] block mt-4 break-words hyphens-auto">
                         Transcendence.
                     </span>
                 </p>

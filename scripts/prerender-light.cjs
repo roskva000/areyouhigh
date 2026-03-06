@@ -5,6 +5,7 @@ const path = require('path');
 const DIST_DIR = path.join(__dirname, '../dist');
 const INDEX_PATH = path.join(DIST_DIR, 'index.html');
 const EXPERIENCES_PATH = path.join(__dirname, '../src/data/experiences.js');
+const EXPERIENCES_SCHEMA_PATH = path.join(__dirname, '../src/data/content/experiences.schema.json');
 
 async function run() {
     console.log('--- Starting Ultra-Light Prerender ---');
@@ -15,22 +16,7 @@ async function run() {
     }
 
     const template = fs.readFileSync(INDEX_PATH, 'utf8');
-    const experiencesContent = fs.readFileSync(EXPERIENCES_PATH, 'utf8');
-
-    // Simple parser for ID, Title, and Description
-    const experiences = [];
-    const expRegex = /id:\s*['"]([^'"]+)['"],\s*title:\s*['"]([^'"]+)['"],\s*desc:\s*['"]([^'"]+)['"]/g;
-    let match;
-    while ((match = expRegex.exec(experiencesContent)) !== null) {
-        experiences.push({ id: match[1], title: match[2], desc: match[3] });
-    }
-
-    // Extract Master IDs for Gallery collections
-    const masterIds = new Set();
-    const masterRegex = /master:\s*['"]([^'"]+)['"]/g;
-    while ((match = masterRegex.exec(experiencesContent)) !== null) {
-        masterIds.add(match[1]);
-    }
+    const { experiences, masterIds } = extractExperienceData();
 
     console.log(`Prerendering ${experiences.length} experiences and ${masterIds.size} master collections.`);
 
@@ -83,6 +69,43 @@ async function run() {
 
         fs.writeFileSync(path.join(dir, 'index.html'), html);
     }
+}
+
+function extractExperienceData() {
+    if (fs.existsSync(EXPERIENCES_SCHEMA_PATH)) {
+        const records = JSON.parse(fs.readFileSync(EXPERIENCES_SCHEMA_PATH, 'utf8'));
+        const experiences = [];
+        const masterIds = new Set();
+
+        for (const entry of records) {
+            experiences.push({
+                id: entry.metadata.id,
+                title: entry.metadata.title,
+                desc: entry.metadata.description,
+            });
+            masterIds.add(entry.tuningParams.masterGroup);
+        }
+
+        return { experiences, masterIds };
+    }
+
+    // Fallback for legacy static experiences format.
+    const experiencesContent = fs.readFileSync(EXPERIENCES_PATH, 'utf8');
+    const experiences = [];
+    const expRegex = /id:\s*['"]([^'"]+)['"],\s*title:\s*['"]([^'"]+)['"],\s*desc:\s*['"]([^'"]+)['"]/g;
+    const masterIds = new Set();
+    const masterRegex = /master:\s*['"]([^'"]+)['"]/g;
+    let match;
+
+    while ((match = expRegex.exec(experiencesContent)) !== null) {
+        experiences.push({ id: match[1], title: match[2], desc: match[3] });
+    }
+
+    while ((match = masterRegex.exec(experiencesContent)) !== null) {
+        masterIds.add(match[1]);
+    }
+
+    return { experiences, masterIds };
 }
 
 run().catch(console.error);

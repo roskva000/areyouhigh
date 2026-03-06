@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -8,16 +8,20 @@ import { EXPERIENCES } from '../data/experiences';
 import { Search, ArrowLeft } from 'lucide-react';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
+import isSupabaseReady from '../lib/isSupabaseReady';
 
 export default function Gallery() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
     const [allVotes, setAllVotes] = useState({});
+    const supabaseReady = isSupabaseReady();
 
     useEffect(() => {
+        if (!supabaseReady) return;
+
         const fetchVotes = async () => {
-            const { data, error } = await supabase.rpc('get_all_likes');
+            const { data } = await supabase.rpc('get_all_likes');
             if (data) {
                 const votesMap = {};
                 data.forEach(row => {
@@ -27,7 +31,7 @@ export default function Gallery() {
             }
         };
         fetchVotes();
-    }, []);
+    }, [supabaseReady]);
 
     // Group experiences by Master Shader
     const masterGroups = useMemo(() => {
@@ -112,7 +116,7 @@ export default function Gallery() {
         return () => ctx.revert();
     }, [activeCategory, allVotes]); // Re-animate when votes load/change sort
 
-    const handleCardClick = (group) => {
+    const handleCardClick = React.useCallback((group) => {
         if (group.isSpecial) {
             // Special experiences navigate directly to the experience
             navigate(`/experience/${group.items[0].id}`);
@@ -120,7 +124,7 @@ export default function Gallery() {
             // Groups navigate to the collection page
             navigate(`/gallery/${group.id}`);
         }
-    };
+    }, [navigate]);
 
     return (
         <div className="relative w-full min-h-screen bg-background antialiased overflow-x-hidden selection:bg-accent/30 selection:text-white">
@@ -131,6 +135,12 @@ export default function Gallery() {
             <Navbar />
 
             <main className="relative z-10 pt-40 pb-32 px-6 md:px-16 container mx-auto">
+                {!supabaseReady && (
+                    <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 font-mono text-[11px] text-amber-200">
+                        Community features temporarily unavailable. Rankings are shown without live community data.
+                    </div>
+                )}
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
                     <div className="max-w-2xl">
@@ -155,6 +165,7 @@ export default function Gallery() {
                         <div className="relative group">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text/20 group-focus-within:text-accent transition-colors" size={18} />
                             <input
+                                aria-label="Search algorithms"
                                 type="text"
                                 placeholder="Search algorithms..."
                                 value={search}
@@ -199,7 +210,8 @@ export default function Gallery() {
                                 isSpecial={group.isSpecial}
                                 variantCount={count}
                                 likeCount={group.totalLikes}
-                                onClick={() => handleCardClick(group)}
+                                onClick={handleCardClick}
+                                group={group}
                             />
                         );
                     })}
