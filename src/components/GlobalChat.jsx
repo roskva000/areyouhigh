@@ -114,7 +114,7 @@ export default function GlobalChat() {
         <>
             {/* Trigger Button */}
             <button
-                aria-label="Toggle Global Chat"
+                aria-label={isOpen ? "Close Global Chat" : "Open Global Chat"}
                 onClick={() => setIsOpen(!isOpen)}
                 className={`fixed bottom-6 right-6 z-[9999] p-4 bg-accent/10 hover:bg-accent text-accent hover:text-black border border-accent/20 rounded-full backdrop-blur-md transition-all duration-700 group shadow-[0_0_20px_rgba(0,0,0,0.5)] focus-visible:ring-2 focus-visible:ring-accent ${isExperienceRoute && idle ? 'opacity-0 pointer-events-none translate-y-10' : 'opacity-100 translate-y-0'}`}
             >
