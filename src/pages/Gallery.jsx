@@ -34,7 +34,7 @@ export default function Gallery() {
     }, [supabaseReady]);
 
     // Group experiences by Master Shader
-    const masterGroups = useMemo(() => {
+    const baseGroups = useMemo(() => {
         const groups = {};
         EXPERIENCES.forEach(exp => {
             if (!groups[exp.master]) {
@@ -58,11 +58,6 @@ export default function Gallery() {
                     .join(' ');
             }
 
-            // Calculate total likes for the group
-            const totalLikes = items.reduce((sum, item) => {
-                return sum + (allVotes[item.id] || 0);
-            }, 0);
-
             return {
                 id: key, // Master Key
                 isSpecial,
@@ -70,32 +65,48 @@ export default function Gallery() {
                 category: items[0].category,
                 items: items,
                 thumbId: items[0].thumbId, // Use the first item's thumb
-                accent: items[0].accent,
-                totalLikes: totalLikes
+                accent: items[0].accent
             };
         });
-    }, [allVotes]);
+    }, []);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    const masterGroups = useMemo(() => {
+        return baseGroups.map(group => {
+            // Calculate total likes for the group
+            const totalLikes = group.items.reduce((sum, item) => {
+                return sum + (allVotes[item.id] || 0);
+            }, 0);
+            return { ...group, totalLikes };
+        });
+    }, [baseGroups, allVotes]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
+
+    const filteredGroups = useMemo(() => {
+        const searchLower = search.toLowerCase();
+        return masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    const sortedGroups = useMemo(() => {
+        return [...filteredGroups].sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [filteredGroups]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
