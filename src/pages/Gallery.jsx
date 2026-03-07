@@ -76,26 +76,32 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    const filteredGroups = useMemo(() => {
+        return masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
+                group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    const sortedGroups = useMemo(() => {
+        return [...filteredGroups].sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [filteredGroups]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
