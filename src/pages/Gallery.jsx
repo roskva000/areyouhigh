@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ExperienceCard from '../components/ExperienceCard';
 import { EXPERIENCES } from '../data/experiences';
-import { Search, ArrowLeft } from 'lucide-react';
+import { Search, ArrowLeft, X } from 'lucide-react';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import isSupabaseReady from '../lib/isSupabaseReady';
@@ -170,8 +170,18 @@ export default function Gallery() {
                                 placeholder="Search algorithms..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full md:w-80 bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-text focus:outline-none focus:border-accent/40 transition-all font-mono text-sm"
+                                className="w-full md:w-80 bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-12 text-text focus:outline-none focus:border-accent/40 transition-all font-mono text-sm"
                             />
+                            {search && (
+                                <button
+                                    type="button"
+                                    aria-label="Clear search"
+                                    onClick={() => setSearch('')}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-text/40 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-full"
+                                >
+                                    <X size={16} />
+                                </button>
+                            )}
                         </div>
 
                         <div className="flex flex-wrap gap-2">
