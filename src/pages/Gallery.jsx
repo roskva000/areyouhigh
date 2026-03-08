@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -13,6 +13,7 @@ import isSupabaseReady from '../lib/isSupabaseReady';
 export default function Gallery() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
+    const deferredSearch = useDeferredValue(search);
     const [activeCategory, setActiveCategory] = useState('All');
     const [allVotes, setAllVotes] = useState({});
     const supabaseReady = isSupabaseReady();
@@ -76,26 +77,31 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    const categories = useMemo(() => ['All', ...new Set(masterGroups.map(g => g.category))], [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // Use deferredSearch in useMemo to prevent main thread blocking during fast typing
+    const sortedGroups = useMemo(() => {
+        const lowerSearch = deferredSearch.toLowerCase();
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+        const filteredGroups = masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(lowerSearch) ||
+                group.items.some(item => item.title.toLowerCase().includes(lowerSearch));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+
+        // Sort: Primarily by likes (descending)
+        return filteredGroups.sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [deferredSearch, masterGroups, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
