@@ -60,7 +60,12 @@ export default function Experiences() {
                             className="portal-card group relative h-96 rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl"
                         >
                             {/* Dynamic Background Image */}
-                            <div className="absolute inset-0 z-0 bg-zinc-950" onClick={() => navigate(`/experience/${exp.id}`)}>
+                            <button
+                                type="button"
+                                className="absolute inset-0 z-0 bg-zinc-950 w-full text-left appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
+                                onClick={() => navigate(`/experience/${exp.id}`)}
+                                aria-label={`Open ${exp.title} portal`}
+                            >
                                 <img
                                     src={`https://images.unsplash.com/${exp.thumbId}?auto=format&fit=crop&q=80&w=800`}
                                     alt={exp.title}
@@ -70,8 +75,8 @@ export default function Experiences() {
                                         e.target.src = `https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800`;
                                     }}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent z-1"></div>
-                            </div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent z-1 pointer-events-none"></div>
+                            </button>
 
                             {/* Hover Glow Effect */}
                             <div
