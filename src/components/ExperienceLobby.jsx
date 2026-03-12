@@ -155,6 +155,7 @@ function ArtifactLogs({ experienceId }) {
 
             <form onSubmit={handleSubmit} className="relative group shrink-0">
                 <input
+                    aria-label="New comment"
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
@@ -404,6 +405,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             <div className="flex items-center gap-2 w-full bg-black/40 p-2 rounded-lg border border-white/10">
                                 <div className="w-6 h-6 rounded bg-current border border-white/20" style={{ color: activePalette.color }}></div>
                                 <input
+                                    aria-label="Custom Hex Color"
                                     type="text"
                                     value={activePalette.color}
                                     onChange={(e) => handleColorChange(e.target.value)}
