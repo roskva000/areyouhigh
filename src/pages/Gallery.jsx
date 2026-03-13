@@ -78,9 +78,12 @@ export default function Gallery() {
 
     const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
 
+    // ⚡ Bolt: Hoisted search.toLowerCase() outside the filter loop to prevent redundant computation
+    // and garbage collection on every group and item iteration during high-frequency typing.
+    const searchLower = search.toLowerCase();
     const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
+        const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+            group.items.some(item => item.title.toLowerCase().includes(searchLower));
         const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
         return matchesSearch && matchesCategory;
     });

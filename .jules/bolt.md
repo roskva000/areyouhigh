@@ -12,3 +12,7 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+
+## 2026-03-13 - Hoisting Invariant String Operations
+**Learning:** Found an $O(N)$ string generation issue in `Gallery.jsx` search filtering where `search.toLowerCase()` was being calculated inside the `masterGroups.filter()` and nested `some()` loop. This creates redundant calculations and unnecessary garbage collection during high-frequency typing events.
+**Action:** Always hoist invariant calculations like `.toLowerCase()` or object mapping outside of `filter` and `map` loops in React components to prevent main thread blocking, particularly in components bound to input fields.
