@@ -155,20 +155,25 @@ function ArtifactLogs({ experienceId }) {
 
             <form onSubmit={handleSubmit} className="relative group shrink-0">
                 <input
+                    aria-label="Log entry text"
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={!commentsReady ? 'Community features temporarily unavailable' : `Log entry as ${currentNickname}...`}
                     disabled={!commentsReady || isSubmitting}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                     aria-label="Submit log entry"
                     type="submit"
                     disabled={!commentsReady || !newComment.trim() || isSubmitting}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md transition-colors"
                 >
-                    <Send size={14} />
+                    {isSubmitting ? (
+                        <div className="w-3.5 h-3.5 border-2 border-white/40 border-t-accent rounded-full animate-spin" aria-hidden="true" />
+                    ) : (
+                        <Send size={14} />
+                    )}
                 </button>
             </form>
         </div>
@@ -181,8 +186,12 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
     const Icon = IconComponent;
     return (
         <button
+            role="tab"
+            aria-selected={activeTab === id}
+            aria-controls={`panel-${id}`}
+            id={`tab-${id}`}
             onClick={() => setActiveTab(id)}
-            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === id
+            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black ${activeTab === id
                 ? 'border-white text-white'
                 : 'border-transparent text-white/40 hover:text-white/70 hover:border-white/20'
                 }`}
@@ -195,8 +204,9 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
 const PillButton = ({ active, onClick, children, tooltip, className = '' }) => (
     <Tooltip text={tooltip}>
         <button
+            aria-pressed={active}
             onClick={onClick}
-            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 ${active
+            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black ${active
                 ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.25)]'
                 : 'bg-white/5 text-white/50 border-white/5 hover:bg-white/10 hover:text-white'
                 } ${className}`}
@@ -404,10 +414,11 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             <div className="flex items-center gap-2 w-full bg-black/40 p-2 rounded-lg border border-white/10">
                                 <div className="w-6 h-6 rounded bg-current border border-white/20" style={{ color: activePalette.color }}></div>
                                 <input
+                                    aria-label="Hex color value"
                                     type="text"
                                     value={activePalette.color}
                                     onChange={(e) => handleColorChange(e.target.value)}
-                                    className="bg-transparent text-white font-mono text-xs focus:outline-none w-full uppercase"
+                                    className="bg-transparent text-white font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded w-full uppercase"
                                 />
                             </div>
                         </div>
@@ -542,14 +553,14 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                     {/* LEFT COLUMN: Controls */}
                     <div className="w-full md:w-2/3 flex flex-col min-h-0 bg-black/20 rounded-2xl border border-white/5">
                         {/* Tabs */}
-                        <div className="flex border-b border-white/10 shrink-0">
+                        <div className="flex border-b border-white/10 shrink-0" role="tablist" aria-label="Lobby Controls">
                             <TabButton id="visuals" activeTab={activeTab} setActiveTab={setActiveTab} label="Visuals" icon={Layers} />
                             <TabButton id="colors" activeTab={activeTab} setActiveTab={setActiveTab} label="Chromatic" icon={Palette} />
                             <TabButton id="effects" activeTab={activeTab} setActiveTab={setActiveTab} label="Effects" icon={Zap} />
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6" role="tabpanel" id={`panel-${activeTab}`} aria-labelledby={`tab-${activeTab}`}>
                             {renderContent()}
                         </div>
                     </div>
