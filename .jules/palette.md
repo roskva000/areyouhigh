@@ -1,3 +1,7 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+
+## 2024-05-25 - [Interactive Elements Need Explicit ARIA States and Focus Styles]
+**Learning:** Custom interactive elements (like tabs or pill toggles built with `button`) require explicit ARIA attributes (such as `aria-selected` or `aria-pressed`) to convey their state to screen readers. Additionally, all custom interactive elements need `focus-visible` styles (`focus-visible:ring-2`, etc.) to ensure keyboard navigators can see which element is currently focused, without disrupting mouse users. Adding `focus-visible:z-10` is often necessary to prevent focus rings from being clipped by adjacent elements.
+**Action:** When building or modifying custom interactive components (tabs, toggles, selectors), always implement explicit ARIA state attributes and use Tailwind's `focus-visible` utilities to provide clear, accessible focus states.
