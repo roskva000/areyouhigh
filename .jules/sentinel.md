@@ -12,7 +12,13 @@
 **Vulnerability:** Supabase API calls in `useComments.js` and `useVotes.js` lacked state locks (e.g., `isSubmitting`, `isVoting`), allowing potential API spam and race conditions. Furthermore, error objects from Supabase were silently ignored or logged to the console, exposing sensitive inner structures.
 **Learning:** React hooks interacting with external APIs (like Supabase) must explicitly handle loading states to prevent rapid, duplicate submissions. Additionally, external library errors must be explicitly checked and thrown, then caught securely without exposing internal data structures to the client.
 **Prevention:** Always implement `isSubmitting`/`isVoting` locks when writing interactive API hooks. Always wrap Supabase calls in `try/catch/finally` blocks, explicitly check for the `error` property in the response, and log securely in the `catch` block.
+
 ## 2024-05-15 - [Information Exposure in Client Logs]
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-11-06 - [Cross-Site Scripting (XSS) via JSON-LD `</script>` Injection]
+**Vulnerability:** JSON-LD structured data embedded via a `<script type="application/ld+json">` tag lacked sanitization, directly dumping stringified JSON (`JSON.stringify()`) onto the page. This permitted an attacker to inject an arbitrary string containing `</script><script>alert(1)</script>` into the JSON structure, escaping the enclosing `<script>` tag and enabling severe cross-site scripting (XSS).
+**Learning:** The browser's HTML parser treats the first `</script>` it encounters as the closing tag for the current script block, regardless of context (e.g., inside a valid JavaScript string). `JSON.stringify` does not escape the `<` character by default.
+**Prevention:** Always sanitize JSON-LD inside script tags. Use `dangerouslySetInnerHTML` combined with regex-based escaping of the `<` character (`JSON.stringify(data).replace(/</g, '\\u003c')`) to ensure the HTML parser never interprets any content as a closing script tag.
