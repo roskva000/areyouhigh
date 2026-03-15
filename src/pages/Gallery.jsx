@@ -76,26 +76,37 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // Bolt: Memoize categories to prevent recalculating Set on every render
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // Bolt: Memoize filtered groups to prevent re-filtering on unrelated renders
+    const filteredGroups = useMemo(() => {
+        // Bolt: Hoist search.toLowerCase() outside the filter loop to avoid redundant string allocations
+        const lowerSearch = search.toLowerCase();
+        return masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(lowerSearch) ||
+                group.items.some(item => item.title.toLowerCase().includes(lowerSearch));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    // Bolt: Memoize sorting to prevent unnecessary calculations on unrelated renders
+    const sortedGroups = useMemo(() => {
+        return [...filteredGroups].sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [filteredGroups]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
