@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -13,6 +13,7 @@ import isSupabaseReady from '../lib/isSupabaseReady';
 export default function Gallery() {
     const navigate = useNavigate();
     const [search, setSearch] = useState('');
+    const deferredSearch = useDeferredValue(search);
     const [activeCategory, setActiveCategory] = useState('All');
     const [allVotes, setAllVotes] = useState({});
     const supabaseReady = isSupabaseReady();
@@ -76,26 +77,41 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // ⚡ Bolt: Memoize categories to prevent redundant Set creation on every render
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // ⚡ Bolt: Memoize filtering and sorting to prevent recalculation on unrelated re-renders.
+    // Use deferredSearch to prevent main thread blocking and input lag during high-frequency typing.
+    const sortedGroups = useMemo(() => {
+        // ⚡ Bolt: Hoist invariant calculations outside the loop
+        const searchLower = deferredSearch.toLowerCase();
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+        const filtered = masterGroups.filter(group => {
+            // ⚡ Bolt: Early return for category mismatch to skip expensive string operations
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            if (!matchesCategory) return false;
+
+            if (!searchLower) return true; // if no search, no need to check strings
+
+            const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+            return matchesSearch;
+        });
+
+        // Sort: Primarily by likes (descending)
+        return filtered.sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [masterGroups, deferredSearch, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
