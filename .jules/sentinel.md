@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [XSS via JSON-LD in React]
+**Vulnerability:** Passing unescaped `JSON.stringify()` directly into a `<script type="application/ld+json">` block makes the application vulnerable to XSS if an attacker controls any strings inside the JSON object, as they can inject a closing `</script>` tag followed by malicious JavaScript.
+**Learning:** In React, placing dynamic text inside a `<script>` tag prevents typical escaping. The safest way to embed dynamic JSON inside a `<script>` element is stringifying it, replacing all `<` characters with `\u003c`, and setting it via `dangerouslySetInnerHTML`.
+**Prevention:** Always sanitize JSON injected into `<script>` elements.
