@@ -73,9 +73,10 @@ function LobbyVotes({ experienceId }) {
             <div className="flex items-center gap-3">
             <button
                 aria-label={`Like experience. Currently ${likes} likes`}
+                aria-pressed={userVote === 'like'}
                 disabled={!votesReady || isVoting}
                 onClick={() => handleVote('like')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400 ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsUp size={14} className={userVote === 'like' ? 'fill-current' : ''} />
                 <span className="font-mono text-[10px]">{likes}</span>
@@ -83,9 +84,10 @@ function LobbyVotes({ experienceId }) {
 
             <button
                 aria-label="Dislike experience"
+                aria-pressed={userVote === 'dislike'}
                 disabled={!votesReady || isVoting}
                 onClick={() => handleVote('dislike')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsDown size={14} className={userVote === 'dislike' ? 'fill-current' : ''} />
                  {userVote === 'dislike' && <span className="font-mono text-[10px]">1</span>}
@@ -181,8 +183,10 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
     const Icon = IconComponent;
     return (
         <button
+            role="tab"
+            aria-selected={activeTab === id}
             onClick={() => setActiveTab(id)}
-            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === id
+            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:z-10 ${activeTab === id
                 ? 'border-white text-white'
                 : 'border-transparent text-white/40 hover:text-white/70 hover:border-white/20'
                 }`}
@@ -195,8 +199,9 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
 const PillButton = ({ active, onClick, children, tooltip, className = '' }) => (
     <Tooltip text={tooltip}>
         <button
+            aria-pressed={active}
             onClick={onClick}
-            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 ${active
+            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${active
                 ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.25)]'
                 : 'bg-white/5 text-white/50 border-white/5 hover:bg-white/10 hover:text-white'
                 } ${className}`}
@@ -332,7 +337,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                     step="0.1"
                                     value={zoom}
                                     onChange={(e) => setZoom(parseFloat(e.target.value))}
-                                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors"
+                                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                                 />
                             </Tooltip>
                         </div>
@@ -354,7 +359,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                     step="1.0"
                                     value={symmetry}
                                     onChange={(e) => setSymmetry(parseFloat(e.target.value))}
-                                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors"
+                                    className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                                 />
                              </Tooltip>
                         </div>
@@ -373,8 +378,9 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                 {customPalettes.map((p) => (
                                     <button
                                         key={p.id}
+                                        aria-pressed={activePaletteId === p.id}
                                         onClick={() => setActivePaletteId(p.id)}
-                                        className={`w-full group relative py-3 px-4 rounded-xl border transition-all flex items-center gap-3 ${activePaletteId === p.id
+                                        className={`w-full group relative py-3 px-4 rounded-xl border transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${activePaletteId === p.id
                                             ? 'bg-white/10 border-white/40'
                                             : 'bg-white/5 border-white/5 hover:bg-white/10'
                                             }`}
@@ -435,7 +441,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                         step="0.1"
                                         value={intensity}
                                         onChange={(e) => setIntensity(parseFloat(e.target.value))}
-                                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors"
+                                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                                     />
                                 </Tooltip>
                             </div>
@@ -455,7 +461,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                         step="0.05"
                                         value={glitch}
                                         onChange={(e) => setGlitch(parseFloat(e.target.value))}
-                                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#f5576c] hover:bg-white/20 transition-colors"
+                                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#f5576c] hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                                     />
                                 </Tooltip>
                             </div>
