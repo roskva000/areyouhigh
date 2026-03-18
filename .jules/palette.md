@@ -1,3 +1,7 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+
+## 2024-05-18 - [Add ARIA roles and focus rings to ExperienceLobby custom tabs/buttons]
+**Learning:** Custom UI components in React (like `TabButton`, `PillButton`, and palette color pickers) frequently lack implicit accessibility roles and keyboard focus styling when built from basic `div` or generic `button` tags. In WebGL-heavy experiences like `ExperienceLobby`, these interactables might not be immediately obvious to screen readers or keyboard navigators without explicit roles.
+**Action:** When building custom interactive tabs or toggle buttons, always add explicit ARIA attributes (`role="tab"`, `aria-selected`, `aria-pressed`) and use Tailwind `focus-visible` modifiers (e.g., `focus-visible:ring-2 focus-visible:ring-accent`) to provide accessible focus states without disrupting the visual aesthetics for pointer users.

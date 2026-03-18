@@ -181,8 +181,10 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
     const Icon = IconComponent;
     return (
         <button
+            role="tab"
+            aria-selected={activeTab === id}
             onClick={() => setActiveTab(id)}
-            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === id
+            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:z-10 ${activeTab === id
                 ? 'border-white text-white'
                 : 'border-transparent text-white/40 hover:text-white/70 hover:border-white/20'
                 }`}
@@ -195,8 +197,9 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
 const PillButton = ({ active, onClick, children, tooltip, className = '' }) => (
     <Tooltip text={tooltip}>
         <button
+            aria-pressed={active}
             onClick={onClick}
-            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 ${active
+            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:z-10 ${active
                 ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.25)]'
                 : 'bg-white/5 text-white/50 border-white/5 hover:bg-white/10 hover:text-white'
                 } ${className}`}
@@ -373,8 +376,9 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                 {customPalettes.map((p) => (
                                     <button
                                         key={p.id}
+                                        aria-pressed={activePaletteId === p.id}
                                         onClick={() => setActivePaletteId(p.id)}
-                                        className={`w-full group relative py-3 px-4 rounded-xl border transition-all flex items-center gap-3 ${activePaletteId === p.id
+                                        className={`w-full group relative py-3 px-4 rounded-xl border transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:z-10 ${activePaletteId === p.id
                                             ? 'bg-white/10 border-white/40'
                                             : 'bg-white/5 border-white/5 hover:bg-white/10'
                                             }`}
@@ -542,7 +546,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                     {/* LEFT COLUMN: Controls */}
                     <div className="w-full md:w-2/3 flex flex-col min-h-0 bg-black/20 rounded-2xl border border-white/5">
                         {/* Tabs */}
-                        <div className="flex border-b border-white/10 shrink-0">
+                        <div role="tablist" aria-label="Configuration categories" className="flex border-b border-white/10 shrink-0">
                             <TabButton id="visuals" activeTab={activeTab} setActiveTab={setActiveTab} label="Visuals" icon={Layers} />
                             <TabButton id="colors" activeTab={activeTab} setActiveTab={setActiveTab} label="Chromatic" icon={Palette} />
                             <TabButton id="effects" activeTab={activeTab} setActiveTab={setActiveTab} label="Effects" icon={Zap} />
