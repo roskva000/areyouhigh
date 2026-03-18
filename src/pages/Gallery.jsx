@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -76,17 +76,31 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // Bolt Optimization: Yield to main thread on rapid search typing
+    const deferredSearch = useDeferredValue(search);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // Bolt Optimization: Memoize static base data derivations
+    const categories = useMemo(() => ['All', ...new Set(masterGroups.map(g => g.category))], [masterGroups]);
+
+    // Bolt Optimization: Hoist `.toLowerCase()` calculation outside the filter loop
+    // Also memoized to prevent running unless its dependencies change
+    const filteredGroups = useMemo(() => {
+        const searchLower = deferredSearch.toLowerCase();
+        return masterGroups.filter(group => {
+            // Early return to short-circuit expensive string operations
+            if (activeCategory !== 'All' && group.category !== activeCategory) {
+                return false;
+            }
+            if (!searchLower) return true;
+
+            return group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+        });
+    }, [masterGroups, deferredSearch, activeCategory]);
 
     // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
+    // Bolt Optimization: Memoize the sort operation
+    const sortedGroups = useMemo(() => [...filteredGroups].sort((a, b) => {
         // Primary sort: Likes (Descending)
         if (b.totalLikes !== a.totalLikes) {
             return b.totalLikes - a.totalLikes;
@@ -95,7 +109,7 @@ export default function Gallery() {
         if (a.isSpecial && !b.isSpecial) return -1;
         if (!a.isSpecial && b.isSpecial) return 1;
         return 0;
-    });
+    }), [filteredGroups]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
