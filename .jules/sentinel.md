@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-05-24 - XSS Vulnerability in JSON-LD Injection
+**Vulnerability:** Untrusted user input within JSON-LD embedded using `JSON.stringify` inside an HTML `<script>` block can execute arbitrary JS because `<script>` contents are not auto-escaped by React.
+**Learning:** `react-helmet` (and `react-helmet-async`) does not natively support `dangerouslySetInnerHTML` for `<script>` tags without breaking server-side and client-side rendering behavior. When rendering JSON-LD, the safest approach within `react-helmet` is to manually sanitize the JSON string by escaping characters like `<` (e.g., using `.replace(/</g, '\\u003c')`) and passing it as a child.
+**Prevention:** Always manually escape the `<` character when injecting JSON strings directly inside a `<script>` element, especially when using libraries like `react-helmet` that do not support standard HTML insertion methods.
