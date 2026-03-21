@@ -178,8 +178,9 @@ export default function Gallery() {
                             {categories.map(cat => (
                                 <button
                                     key={cat}
+                                    aria-pressed={activeCategory === cat}
                                     onClick={() => setActiveCategory(cat)}
-                                    className={`px-4 py-2 rounded-xl border font-mono text-[10px] uppercase tracking-wider transition-all ${activeCategory === cat
+                                    className={`px-4 py-2 rounded-xl border font-mono text-[10px] uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:z-10 ${activeCategory === cat
                                         ? 'bg-accent text-black border-accent'
                                         : 'bg-white/5 text-text/40 border-white/5 hover:border-white/20'
                                         }`}
