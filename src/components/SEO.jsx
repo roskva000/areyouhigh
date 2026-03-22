@@ -37,10 +37,14 @@ const SEO = ({
             <link rel="canonical" href={url} />
 
             {/* JSON-LD Structured Data */}
+            {/* SECURITY: Prevent XSS by sanitizing the JSON string to escape < and using dangerouslySetInnerHTML */}
             {jsonLd && (
-                <script type="application/ld+json">
-                    {JSON.stringify(jsonLd)}
-                </script>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')
+                    }}
+                />
             )}
         </Helmet>
     );
