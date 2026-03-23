@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -12,14 +12,19 @@ export default function MasterCollection() {
     const { masterId } = useParams();
     const navigate = useNavigate();
 
-    // Find experiences matching the master shader
-    const variations = EXPERIENCES.filter(exp => exp.master === masterId);
+    // Cache derived data to prevent redundant recalculations during unrelated re-renders
+    const { variations, masterTitle } = useMemo(() => {
+        // Find experiences matching the master shader
+        const vars = EXPERIENCES.filter(exp => exp.master === masterId);
 
-    // Human-readable title from master key (e.g., "fractal_mandelbrot" -> "Fractal Mandelbrot")
-    const masterTitle = masterId
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        // Human-readable title from master key (e.g., "fractal_mandelbrot" -> "Fractal Mandelbrot")
+        const title = masterId
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        return { variations: vars, masterTitle: title };
+    }, [masterId]);
 
     const handleCardClick = useCallback((exp) => {
         navigate(`/experience/${exp.id}`);
