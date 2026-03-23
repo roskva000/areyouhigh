@@ -27,7 +27,7 @@ const ExperienceCard = ({
             type="button"
             className="gallery-card group relative h-80 w-full rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl text-left appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent focus-visible:border-accent"
             onClick={handleClick}
-            aria-label={`${title} deneyimini aç`}
+            aria-label={`Open ${title} experience. Category: ${category}. ${likeCount > 0 ? likeCount + ' likes. ' : ''}${variantCount > 0 && !isSpecial ? variantCount + ' variants. ' : ''}${description || ''}`}
         >
             {/* Dynamic Background Image */}
             <div className="absolute inset-0 z-0 bg-zinc-950">
