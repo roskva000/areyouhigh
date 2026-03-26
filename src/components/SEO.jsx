@@ -38,9 +38,11 @@ const SEO = ({
 
             {/* JSON-LD Structured Data */}
             {jsonLd && (
-                <script type="application/ld+json">
-                    {JSON.stringify(jsonLd)}
-                </script>
+                <script
+                    type="application/ld+json"
+                    // Prevent XSS by escaping < to \u003c and using dangerouslySetInnerHTML
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+                />
             )}
         </Helmet>
     );
