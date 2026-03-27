@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -13,13 +13,18 @@ export default function MasterCollection() {
     const navigate = useNavigate();
 
     // Find experiences matching the master shader
-    const variations = EXPERIENCES.filter(exp => exp.master === masterId);
+    // ⚡ Bolt: Wrap in useMemo to prevent expensive filtering/mapping on unrelated re-renders
+    const { variations, masterTitle } = useMemo(() => {
+        const filtered = EXPERIENCES.filter(exp => exp.master === masterId);
 
-    // Human-readable title from master key (e.g., "fractal_mandelbrot" -> "Fractal Mandelbrot")
-    const masterTitle = masterId
-        .split('_')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
+        // Human-readable title from master key (e.g., "fractal_mandelbrot" -> "Fractal Mandelbrot")
+        const title = masterId
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        return { variations: filtered, masterTitle: title };
+    }, [masterId]);
 
     const handleCardClick = useCallback((exp) => {
         navigate(`/experience/${exp.id}`);
