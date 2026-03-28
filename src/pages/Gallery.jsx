@@ -76,26 +76,43 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // ⚡ Bolt: Memoize categories array to prevent redundant Set creation on every render
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // ⚡ Bolt: Memoize filtered and sorted groups, hoist expensive string ops, and use early returns
+    const sortedGroups = useMemo(() => {
+        // Hoist invariant calculation outside the filter loop
+        const searchLower = search.toLowerCase();
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+        const filtered = masterGroups.filter(group => {
+            // Short-circuit: Check fast exact category match first
+            if (activeCategory !== 'All' && group.category !== activeCategory) {
+                return false;
+            }
+
+            // Skip expensive string operations if search is empty
+            if (!searchLower) return true;
+
+            // Then perform more expensive string inclusion checks
+            if (group.title.toLowerCase().includes(searchLower)) return true;
+
+            return group.items.some(item => item.title.toLowerCase().includes(searchLower));
+        });
+
+        // Sort: Primarily by likes (descending)
+        return filtered.sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
