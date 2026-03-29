@@ -75,7 +75,7 @@ function LobbyVotes({ experienceId }) {
                 aria-label={`Like experience. Currently ${likes} likes`}
                 disabled={!votesReady || isVoting}
                 onClick={() => handleVote('like')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${userVote === 'like' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsUp size={14} className={userVote === 'like' ? 'fill-current' : ''} />
                 <span className="font-mono text-[10px]">{likes}</span>
@@ -85,7 +85,7 @@ function LobbyVotes({ experienceId }) {
                 aria-label="Dislike experience"
                 disabled={!votesReady || isVoting}
                 onClick={() => handleVote('dislike')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${userVote === 'dislike' ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10 hover:text-white'}`}
             >
                 <ThumbsDown size={14} className={userVote === 'dislike' ? 'fill-current' : ''} />
                  {userVote === 'dislike' && <span className="font-mono text-[10px]">1</span>}
@@ -166,7 +166,7 @@ function ArtifactLogs({ experienceId }) {
                     aria-label="Submit log entry"
                     type="submit"
                     disabled={!commentsReady || !newComment.trim() || isSubmitting}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
                 >
                     <Send size={14} />
                 </button>
@@ -182,7 +182,7 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
     return (
         <button
             onClick={() => setActiveTab(id)}
-            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === id
+            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${activeTab === id
                 ? 'border-white text-white'
                 : 'border-transparent text-white/40 hover:text-white/70 hover:border-white/20'
                 }`}
@@ -196,7 +196,7 @@ const PillButton = ({ active, onClick, children, tooltip, className = '' }) => (
     <Tooltip text={tooltip}>
         <button
             onClick={onClick}
-            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 ${active
+            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${active
                 ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.25)]'
                 : 'bg-white/5 text-white/50 border-white/5 hover:bg-white/10 hover:text-white'
                 } ${className}`}
@@ -522,7 +522,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                     <button
                         aria-label="Back to previous screen"
                         onClick={onBack}
-                        className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all hover:scale-105 active:scale-95 group"
+                        className="p-3 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all hover:scale-105 active:scale-95 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                     </button>
@@ -565,7 +565,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
 
                             <button
                                 onClick={handleLaunch}
-                                className="w-full group relative px-8 py-5 rounded-xl bg-white text-black font-black text-sm md:text-base overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] border-2 border-white/50"
+                                className="w-full group relative px-8 py-5 rounded-xl bg-white text-black font-black text-sm md:text-base overflow-hidden transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] border-2 border-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:ring-offset-background"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                                 <span className="relative z-10 flex items-center gap-3 tracking-widest">
