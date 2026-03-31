@@ -394,7 +394,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
 
                         {/* INFINITE COLOR PICKER */}
                         <div className="lobby-item flex flex-col items-center justify-center bg-black/20 rounded-xl p-4 border border-white/5">
-                            <div className="mb-4 w-full flex justify-center">
+                            <div className="mb-4 w-full flex justify-center" aria-label="Interactive color wheel" role="group">
                                 <HexColorPicker
                                     color={activePalette.color}
                                     onChange={handleColorChange}
@@ -404,6 +404,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             <div className="flex items-center gap-2 w-full bg-black/40 p-2 rounded-lg border border-white/10">
                                 <div className="w-6 h-6 rounded bg-current border border-white/20" style={{ color: activePalette.color }}></div>
                                 <input
+                                    aria-label="Custom Hex Color"
                                     type="text"
                                     value={activePalette.color}
                                     onChange={(e) => handleColorChange(e.target.value)}
