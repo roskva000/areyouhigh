@@ -1,0 +1,3 @@
+## 2026-04-01 - Added comprehensive keyboard and ARIA support to ExperienceLobby tabs
+**Learning:** The custom TabButton and PillButton components in ExperienceLobby.jsx functioned purely through click handlers and styling without semantic roles, state bindings (aria-selected, aria-pressed), or keyboard focus indicators. This severely hindered screen-reader and keyboard accessibility.
+**Action:** Applied semantic role="tab" and role="tablist" properties, explicitly linked tabs to content via aria-controls and aria-labelledby, bound active states to aria-selected/aria-pressed, and added clear Tailwind focus-visible outlines for non-mouse navigation.
