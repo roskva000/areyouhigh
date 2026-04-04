@@ -12,3 +12,7 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+
+## 2024-04-04 - Optimizing Dynamic React Iterations with useDeferredValue and useMemo
+**Learning:** Filtering arrays inline within a React component's render body causes the application to block the main thread, especially when typing in a search bar (causing lag/jank) due to recalculation. useMemo caches static data, but with a dynamic search query dependency it recalculates synchronously on every keystroke.
+**Action:** Combine `useMemo` with `useDeferredValue` to de-prioritize the filtering/sorting execution, preventing input lag. Hoist invariant calculations (like `.toLowerCase()`) out of the `.filter` and `.map` loops, and evaluate cheap conditions (like category matching) early to short-circuit expensive substring searches.
