@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [XSS via JSON-LD Direct Injection in React]
+**Vulnerability:** The `jsonLd` stringified payload in `src/components/SEO.jsx` was directly injected into a `<script type="application/ld+json">` tag via standard React children interpolation (`{JSON.stringify(jsonLd)}`). Since React does not auto-escape the `<` character inside `<script>` elements, an attacker could potentially break out of the script tag using `</script>` embedded in user-controlled JSON-LD properties (e.g., descriptions or names), leading to a Cross-Site Scripting (XSS) vulnerability.
+**Learning:** React's auto-escaping mechanism applies to standard HTML text nodes but is intentionally bypassed for `<script>` and `<style>` tag contents, allowing raw text injection. Therefore, stringifying arbitrary JSON inside a `<script>` tag is unsafe without manual escaping of potentially executable tags.
+**Prevention:** Always use `dangerouslySetInnerHTML` for `<script>` tags injecting JSON data and sanitize the payload by explicitly replacing all `<` characters with their Unicode equivalent `\u003c` (e.g., `dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }}`).
