@@ -179,10 +179,15 @@ function ArtifactLogs({ experienceId }) {
 // Changed icon: Icon to just Icon and using it directly
 const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) => {
     const Icon = IconComponent;
+    const isActive = activeTab === id;
     return (
         <button
+            role="tab"
+            aria-selected={isActive}
+            aria-controls={`panel-${id}`}
+            id={`tab-${id}`}
             onClick={() => setActiveTab(id)}
-            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 ${activeTab === id
+            className={`flex-1 pb-3 pt-2 text-[10px] md:text-xs font-mono uppercase tracking-widest border-b-2 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/50 ${isActive
                 ? 'border-white text-white'
                 : 'border-transparent text-white/40 hover:text-white/70 hover:border-white/20'
                 }`}
@@ -542,14 +547,19 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                     {/* LEFT COLUMN: Controls */}
                     <div className="w-full md:w-2/3 flex flex-col min-h-0 bg-black/20 rounded-2xl border border-white/5">
                         {/* Tabs */}
-                        <div className="flex border-b border-white/10 shrink-0">
+                        <div role="tablist" aria-label="Experience customization tabs" className="flex border-b border-white/10 shrink-0">
                             <TabButton id="visuals" activeTab={activeTab} setActiveTab={setActiveTab} label="Visuals" icon={Layers} />
                             <TabButton id="colors" activeTab={activeTab} setActiveTab={setActiveTab} label="Chromatic" icon={Palette} />
                             <TabButton id="effects" activeTab={activeTab} setActiveTab={setActiveTab} label="Effects" icon={Zap} />
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6">
+                        <div
+                            role="tabpanel"
+                            id={`panel-${activeTab}`}
+                            aria-labelledby={`tab-${activeTab}`}
+                            className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-6"
+                        >
                             {renderContent()}
                         </div>
                     </div>
