@@ -1,0 +1,3 @@
+## 2024-04-06 - Accessible Custom Tabs Implementation
+**Learning:** Custom interactive components (like tabs) require explicit ARIA roles (`tablist`, `tab`, `tabpanel`) and state attributes (`aria-selected`, `aria-controls`) to be usable by screen readers. Furthermore, adding `focus-visible` utilities (e.g., `focus-visible:ring-2`) is crucial to provide a clear focus indicator for keyboard users without disrupting the visual experience for mouse users.
+**Action:** Always implement full ARIA attribute coverage and explicit visual focus states via `focus-visible` when building custom components that mimic native widget behavior (such as tabs, accordions, or dropdowns).
