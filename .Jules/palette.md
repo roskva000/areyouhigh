@@ -1,0 +1,3 @@
+## 2025-02-27 - Accessible Call To Action buttons
+**Learning:** Primary call-to-action buttons, especially those using complex Tailwind hover animations, often miss clear focus indicators, which can make keyboard navigation confusing. While hover styles give mouse users visual feedback, keyboard users rely solely on focus styles.
+**Action:** Always ensure that interactive elements have a clear `focus-visible` state (e.g., `focus-visible:ring-2`) and an `aria-label` when the action's intent might be implicitly understood visually but needs explicit description for screen readers.

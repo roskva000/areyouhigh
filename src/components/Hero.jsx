@@ -61,8 +61,9 @@ export default function Hero() {
 
                 <div className="hero-cta flex items-center gap-4">
                     <button
+                        aria-label="Scroll to experiences section"
                         onClick={() => document.getElementById('experiences')?.scrollIntoView({ behavior: 'smooth' })}
-                        className="relative overflow-hidden group bg-accent text-white px-8 py-4 rounded-full font-mono text-sm uppercase tracking-wider transition-transform duration-[600ms] hover:scale-[1.03] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+                        className="relative overflow-hidden group bg-accent text-white px-8 py-4 rounded-full font-mono text-sm uppercase tracking-wider transition-transform duration-[600ms] hover:scale-[1.03] ease-[cubic-bezier(0.25,0.46,0.45,0.94)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent"
                     >
                         <span className="relative z-10">Open the Doors of Perception</span>
                         <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
