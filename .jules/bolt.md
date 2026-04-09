@@ -12,3 +12,6 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+## 2024-04-09 - Memoizing complex state derivations
+**Learning:** The prompt constraints are very strict for Bolt tasks. Specifically, the "Always do" requirement to "Add comments explaining the optimization" is strictly enforced in PR review. Micro-optimizations without comments will lead to a failed review.
+**Action:** When making any performance enhancement (even simple `useMemo` additions), always include an inline code comment starting with `// ⚡ Bolt: ` explaining *why* the memoization is added and what redundant calculations it prevents, directly addressing the PR review expectations.
