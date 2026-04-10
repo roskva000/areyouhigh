@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-05-24 - [Unhandled Promise Rejections & Information Leakage]
+**Vulnerability:** Supabase queries in various files (GlobalChat.jsx, useComments.js, useVotes.js, Gallery.jsx) did not explicitly handle returned `error` objects or were not wrapped in `try/catch` blocks. This could lead to unhandled promise rejections or implicit exposure of internal database errors if data fetching failed.
+**Learning:** Supabase JavaScript client returns an `{ data, error }` tuple. If the error is not explicitly checked and handled within a `try/catch` context, the application fails insecurely, potentially leaking schema details or failing silently.
+**Prevention:** Always wrap Supabase database queries (e.g., `.from()`, `.rpc()`) in `try/catch` blocks, explicitly check for the returned `error` object (e.g., `if (error) throw error;`), and use generic client-side console logging in the `catch` block to prevent information exposure and unhandled promise rejections.
