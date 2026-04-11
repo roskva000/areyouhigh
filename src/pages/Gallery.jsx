@@ -21,13 +21,18 @@ export default function Gallery() {
         if (!supabaseReady) return;
 
         const fetchVotes = async () => {
-            const { data } = await supabase.rpc('get_all_likes');
-            if (data) {
-                const votesMap = {};
-                data.forEach(row => {
-                    votesMap[row.experience_id] = row.count;
-                });
-                setAllVotes(votesMap);
+            try {
+                const { data, error } = await supabase.rpc('get_all_likes');
+                if (error) throw error;
+                if (data) {
+                    const votesMap = {};
+                    data.forEach(row => {
+                        votesMap[row.experience_id] = row.count;
+                    });
+                    setAllVotes(votesMap);
+                }
+            } catch {
+                console.error('Failed to fetch gallery likes');
             }
         };
         fetchVotes();

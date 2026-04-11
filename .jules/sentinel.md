@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [Unhandled API Errors in Data Fetching]
+**Vulnerability:** Supabase queries (`.rpc()`, `.from()`) used to fetch comments, votes, and chat messages lacked `try/catch` blocks and did not explicitly check the returned `error` object. In `useVotes.js`, `.single()` was used which threw unhandled errors when no rows were found. Unhandled errors could potentially bubble up, break the UI, or leak internal schema details if eventually logged improperly.
+**Learning:** External API calls, even read-only fetch queries, must handle errors defensively to fail securely. Additionally, when expecting zero or one row, `.maybeSingle()` must be used instead of `.single()` to prevent throwing exceptions.
+**Prevention:** Always wrap Supabase queries in `try/catch`, explicitly check and throw `error` objects, and catch them gracefully using generic error messages (e.g., `console.error('Failed to fetch data')`). Use `.maybeSingle()` for optional single-row queries.
