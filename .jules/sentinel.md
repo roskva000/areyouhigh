@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-18 - Unhandled Supabase Promise Rejections
+**Vulnerability:** Supabase queries were missing `try/catch` blocks and explicitly throwing the raw returned `error` object up the stack, which could expose internal database information or unhandled promise rejection details to the client in production.
+**Learning:** In a production application, raw database errors and stack traces should never be exposed to the client. Unhandled promise rejections can also cause the application to crash or behave unexpectedly.
+**Prevention:** Always wrap Supabase database queries in `try/catch` blocks, explicitly check for the returned `error` object, and log the error safely (e.g., only in dev mode) without throwing it to the client. Also, use `.maybeSingle()` instead of `.single()` when querying for a row that might not exist to prevent throwing a PGRST116 error.

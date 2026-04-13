@@ -25,13 +25,20 @@ export default function GlobalChat() {
         if (!supabaseReady) return undefined;
 
         const fetchMessages = async () => {
-            const { data } = await supabase
-                .from('global_chat')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(50);
+            try {
+                const { data, error } = await supabase
+                    .from('global_chat')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
 
-            if (data) setMessages(data.reverse());
+                if (error) throw error;
+                if (data) setMessages(data.reverse());
+            } catch (err) {
+                if (import.meta.env.DEV) {
+                    console.error('Failed to fetch messages:', err);
+                }
+            }
         };
 
         fetchMessages();
