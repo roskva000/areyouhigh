@@ -14,13 +14,20 @@ export default function useComments(experienceId) {
         const safeExperienceId = experienceId.replace(/[^a-zA-Z0-9_-]/g, '');
 
         const fetchComments = async () => {
-            const { data } = await supabase
-                .from('comments')
-                .select('*')
-                .eq('experience_id', safeExperienceId)
-                .order('created_at', { ascending: false });
+            try {
+                const { data, error } = await supabase
+                    .from('comments')
+                    .select('*')
+                    .eq('experience_id', safeExperienceId)
+                    .order('created_at', { ascending: false });
 
-            if (data) setComments(data);
+                if (error) throw error;
+                if (data) setComments(data);
+            } catch (err) {
+                if (import.meta.env.DEV) {
+                    console.error('Failed to fetch comments:', err);
+                }
+            }
         };
 
         fetchComments();
