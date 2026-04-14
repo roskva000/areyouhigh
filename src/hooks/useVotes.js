@@ -16,24 +16,34 @@ export default function useVotes(experienceId) {
 
         // Fetch total counts and user's vote
         const fetchVotes = async () => {
-            // Get totals using the RPC function we created
-            const { data: counts } = await supabase
-                .rpc('get_experience_votes', { exp_id: safeExperienceId });
+            try {
+                // Get totals using the RPC function we created
+                const { data: counts, error: countsError } = await supabase
+                    .rpc('get_experience_votes', { exp_id: safeExperienceId });
 
-            if (counts && counts.length > 0) {
-                setLikes(counts[0].likes);
-            }
+                if (countsError) throw countsError;
 
-            // Check if THIS user has voted
-            const { data: myVote } = await supabase
-                .from('votes')
-                .select('vote_type')
-                .eq('experience_id', safeExperienceId)
-                .eq('user_id', userId)
-                .single();
+                if (counts && counts.length > 0) {
+                    setLikes(counts[0].likes);
+                }
 
-            if (myVote) {
-                setUserVote(myVote.vote_type);
+                // Check if THIS user has voted
+                const { data: myVote, error: myVoteError } = await supabase
+                    .from('votes')
+                    .select('vote_type')
+                    .eq('experience_id', safeExperienceId)
+                    .eq('user_id', userId)
+                    .maybeSingle();
+
+                if (myVoteError) throw myVoteError;
+
+                if (myVote) {
+                    setUserVote(myVote.vote_type);
+                }
+            } catch (err) {
+                if (import.meta.env.DEV) {
+                    console.error('Fetch votes failed', err);
+                }
             }
         };
 
@@ -109,8 +119,10 @@ export default function useVotes(experienceId) {
                 }, { onConflict: 'experience_id, user_id' });
                 if (error) throw error;
             }
-        } catch {
-            console.error('Vote operation failed');
+        } catch (err) {
+            if (import.meta.env.DEV) {
+                console.error('Vote operation failed', err);
+            }
             // Rollback optimistic update
             setUserVote(previousVote);
             setLikes(previousLikes);

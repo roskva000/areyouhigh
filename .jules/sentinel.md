@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [Information Exposure in useVotes Error Handling]
+**Vulnerability:** In `useVotes.js`, database errors related to fetching and updating votes were being directly logged using `console.error`, and the initial vote query was using `.single()` which throws a `PGRST116` error if zero rows are found. This exposes database state and unhandled promise rejection details to the client console.
+**Learning:** React hooks querying Supabase must use `.maybeSingle()` for queries that legitimately may return zero rows, avoiding artificial error states. Additionally, generic error catching must wrap `console.error` calls in `import.meta.env.DEV` to prevent leaking diagnostic information in production.
+**Prevention:** Use `.maybeSingle()` for 0-or-1 row lookups in Supabase. Always wrap `catch` block logging in `if (import.meta.env.DEV)` to sanitize client-side production traces.
