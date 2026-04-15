@@ -12,3 +12,6 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+## 2024-05-24 - Memoizing Route Parameter Derived Data
+**Learning:** In components rendering collections based on route parameters (like `MasterCollection.jsx`), deriving complex string titles and filtering large static arrays (`EXPERIENCES.filter`) without memoization causes these operations to run on every render. This becomes a bottleneck when combined with libraries that trigger frequent re-renders (like GSAP animations) or context state updates.
+**Action:** Always wrap array filtering and complex string manipulations derived from dynamic route parameters in a `useMemo` block to prevent expensive redundant recalculations during unrelated re-renders.
