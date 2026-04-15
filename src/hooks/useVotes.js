@@ -25,12 +25,14 @@ export default function useVotes(experienceId) {
             }
 
             // Check if THIS user has voted
+            // Security fix: using .maybeSingle() instead of .single() to avoid
+            // PGRST116 (0 rows) error which can expose internal stack details
             const { data: myVote } = await supabase
                 .from('votes')
                 .select('vote_type')
                 .eq('experience_id', safeExperienceId)
                 .eq('user_id', userId)
-                .single();
+                .maybeSingle();
 
             if (myVote) {
                 setUserVote(myVote.vote_type);
