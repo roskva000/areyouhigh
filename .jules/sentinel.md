@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-05-24 - Handle unhandled DB zero-row promise rejections securely
+**Vulnerability:** Calling Supabase's `.single()` fails throwing PGRST116 without try/catch handling, exposing internals.
+**Learning:** Returning no rows should use `.maybeSingle()` and `.rpc()` db requests should always be wrapped around try/catch to avoid unhandled rejections that might expose info.
+**Prevention:** Always use `.maybeSingle()` on conditionally fetching a user row, catch query errors appropriately.
