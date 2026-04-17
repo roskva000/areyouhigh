@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import Navbar from '../components/Navbar';
@@ -76,26 +76,36 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // ⚡ Bolt: Memoize categories to prevent unnecessary recalculations on every render
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // ⚡ Bolt: Memoize filteredGroups and hoist search string conversion outside the iteration loop
+    const filteredGroups = useMemo(() => {
+        const searchLower = search.toLowerCase();
+        return masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+    }, [masterGroups, search, activeCategory]);
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    // ⚡ Bolt: Memoize sortedGroups to prevent re-sorting on every render
+    const sortedGroups = useMemo(() => {
+        // Sort: Primarily by likes (descending)
+        return [...filteredGroups].sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [filteredGroups]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -116,7 +126,7 @@ export default function Gallery() {
         return () => ctx.revert();
     }, [activeCategory, allVotes]); // Re-animate when votes load/change sort
 
-    const handleCardClick = React.useCallback((group) => {
+    const handleCardClick = useCallback((group) => {
         if (group.isSpecial) {
             // Special experiences navigate directly to the experience
             navigate(`/experience/${group.items[0].id}`);
