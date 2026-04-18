@@ -12,3 +12,7 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+
+## 2026-04-18 - Array Mapping and Filtering in React Renders
+**Learning:** Found performance overhead in `Gallery.jsx` where computationally expensive operations (creating new Sets, mapping arrays, and repeatedly calling `.toLowerCase()` on search strings inside a `.filter` loop) were happening on every render cycle.
+**Action:** Always wrap derived collections (like mapped categories and filtered/sorted lists) in `useMemo` to ensure they only recalculate when their specific dependencies change, and hoist string operations like `.toLowerCase()` outside of iteration loops.
