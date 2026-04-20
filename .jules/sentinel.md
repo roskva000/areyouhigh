@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [Information Exposure via Supabase Error Handling in useVotes.js]
+**Vulnerability:** Supabase queries in `useVotes.js` lacked `try/catch` blocks and did not explicitly check for `error` objects returned by `.rpc` and `.from`. If `.single()` was called when no vote existed (PGRST116), or if a database query failed, the raw database error object would either cause an unhandled promise rejection or leak database details to the client console.
+**Learning:** Supabase queries require explicit error checking and catching to prevent information exposure. Using `.single()` when zero rows might be returned is dangerous and triggers false-positive database errors.
+**Prevention:** Always use `.maybeSingle()` when fetching records that may not exist. Always wrap Supabase calls in `try/catch` blocks, throw returned `error` objects explicitly, and log generic client-side messages rather than raw database error objects.
