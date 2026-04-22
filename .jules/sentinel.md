@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-05-24 - [Unhandled Database Error and PGRST116]
+**Vulnerability:** The `fetchVotes` method in `useVotes.js` did not wrap its database calls in a `try/catch` block and used `.single()` when querying the user's vote. If the user hadn't voted, this resulted in an unhandled PGRST116 database exception, exposing the application to unhandled promise rejections and potential information leakage if errors were implicitly logged.
+**Learning:** `supabase.select().single()` throws an error if exactly one row isn't found, whereas `maybeSingle()` gracefully returns null without throwing. Furthermore, missing `try/catch` wrappers around external database calls fail the "fail securely" principle.
+**Prevention:** Always use `maybeSingle()` instead of `single()` for queries that might legitimately return zero rows (like checking user interactions). Always wrap asynchronous database fetch queries in explicit `try/catch` blocks.
