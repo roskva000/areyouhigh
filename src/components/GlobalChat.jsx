@@ -183,16 +183,23 @@ export default function GlobalChat() {
                             placeholder={!supabaseReady ? 'Community features temporarily unavailable' : cooldown > 0 ? `Wait ${cooldown}s...` : 'Transmit signal...'}
                             disabled={!supabaseReady || cooldown > 0}
                             maxLength={140}
-                            className="w-full bg-black/50 border border-white/10 rounded-xl py-2.5 pl-3 pr-10 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-black/50 border border-white/10 rounded-xl py-2.5 pl-3 pr-20 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                         />
-                        <button
-                            aria-label="Send message"
-                            type="submit"
-                            disabled={!supabaseReady || !newMessage.trim() || cooldown > 0}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
-                        >
-                            <Send size={14} />
-                        </button>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            {newMessage.length > 0 && (
+                                <span className={`font-mono text-[9px] ${newMessage.length >= 130 ? 'text-red-400' : 'text-white/30'}`}>
+                                    {newMessage.length}/140
+                                </span>
+                            )}
+                            <button
+                                aria-label="Send message"
+                                type="submit"
+                                disabled={!supabaseReady || !newMessage.trim() || cooldown > 0}
+                                className="text-white/40 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
+                            >
+                                <Send size={14} />
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
