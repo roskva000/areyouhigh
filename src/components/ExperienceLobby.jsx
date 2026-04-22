@@ -160,16 +160,24 @@ function ArtifactLogs({ experienceId }) {
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={!commentsReady ? 'Community features temporarily unavailable' : `Log entry as ${currentNickname}...`}
                     disabled={!commentsReady || isSubmitting}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    maxLength={140}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-24 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
-                <button
-                    aria-label="Submit log entry"
-                    type="submit"
-                    disabled={!commentsReady || !newComment.trim() || isSubmitting}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
-                >
-                    <Send size={14} />
-                </button>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    {newComment.length > 0 && (
+                        <span className={`font-mono text-[9px] ${newComment.length >= 130 ? 'text-red-400' : 'text-white/30'}`}>
+                            {newComment.length}/140
+                        </span>
+                    )}
+                    <button
+                        aria-label="Submit log entry"
+                        type="submit"
+                        disabled={!commentsReady || !newComment.trim() || isSubmitting}
+                        className="p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
+                    >
+                        <Send size={14} />
+                    </button>
+                </div>
             </form>
         </div>
     );
