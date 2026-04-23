@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [Unhandled Promise Rejection and Information Exposure in API Fetch Calls]
+**Vulnerability:** Supabase queries in `fetchVotes` within `useVotes.js` lacked error handling, leading to unhandled promise rejections on failure. Additionally, the `.single()` method was used without a `try/catch` block, which causes a `PGRST116` error and exposes database schema/table information if zero rows are returned.
+**Learning:** All asynchronous database/API calls, including fetch operations inside `useEffect`, must be wrapped in `try/catch` blocks and explicitly check for an `error` property to prevent application crashes and sensitive error exposure. Furthermore, when expecting 0 or 1 row from Supabase, `.maybeSingle()` must be used to safely handle empty results without throwing.
+**Prevention:** Always wrap Supabase query executions in `try/catch` blocks with generic client-side logging. Always use `.maybeSingle()` instead of `.single()` when a row might not exist.
