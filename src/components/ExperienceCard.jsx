@@ -91,4 +91,20 @@ const ExperienceCard = ({
     );
 };
 
-export default React.memo(ExperienceCard);
+// Performance Optimization: Custom comparison function for React.memo
+// This explicitly compares primitive props and ignores the recreating onClick function
+// reference passed down during map iterations in parent components, preventing unnecessary re-renders.
+export default React.memo(ExperienceCard, (prevProps, nextProps) => {
+    return (
+        prevProps.title === nextProps.title &&
+        prevProps.category === nextProps.category &&
+        prevProps.thumbId === nextProps.thumbId &&
+        prevProps.accentColor === nextProps.accentColor &&
+        prevProps.description === nextProps.description &&
+        prevProps.isSpecial === nextProps.isSpecial &&
+        prevProps.variantCount === nextProps.variantCount &&
+        prevProps.likeCount === nextProps.likeCount &&
+        prevProps.index === nextProps.index &&
+        (prevProps.group?.id === nextProps.group?.id)
+    );
+});
