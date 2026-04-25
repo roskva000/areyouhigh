@@ -1,3 +1,6 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+## 2024-05-18 - Keyboard Accessible Tooltips
+**Learning:** Tooltip components that only rely on `onMouseEnter` and `onMouseLeave` are invisible to keyboard users navigating via `Tab`. React's synthetic focus events bubble up, meaning we can add `onFocus` and `onBlur` to a non-focusable parent wrapper and it will correctly capture focus events from interactive children (like `<button>`).
+**Action:** When building interactive wrappers like Tooltips, always pair hover events (`onMouseEnter`/`Leave`) with focus events (`onFocus`/`Blur`) on the wrapper, and ensure the interactive children have clear `focus-visible` states to provide visual feedback.
