@@ -12,3 +12,7 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+
+## 2024-05-24 - React.memo with custom comparison functions vs useMemo in parents
+**Learning:** Found a critical bug where `React.memo` was used with a custom comparison function that explicitly ignored `onClick` and `group` props to "prevent unnecessary re-renders". This introduced a severe "stale closure" bug where the child component held onto outdated state.
+**Action:** Never intentionally omit function or object props from a `React.memo` comparison just to force optimization. Instead, correctly memoize the *creation* of those references in the parent component using `useCallback` and `useMemo`, or optimize the expensive data derivation (like `.filter()` or `.sort()`) in the parent before passing it down.
