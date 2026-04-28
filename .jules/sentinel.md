@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2026-04-28 - [CSP Implementation Considerations]
+**Vulnerability:** Missing Content Security Policy (CSP)
+**Learning:** When implementing a CSP that explicitly whitelists a service like Google Tag Manager, ensure you also identify and whitelist the domains of any third-party scripts dynamically injected by that service (e.g., Google Analytics). Additionally, Vite relies on a WebSocket connection for Hot Module Replacement (HMR) during development, which might be blocked by the current `connect-src` directive because `ws:` protocols and different ports are not inherently covered by `'self'`.
+**Prevention:** Thoroughly trace and document all dynamically loaded third-party scripts and development-specific resources before finalizing a strict CSP to prevent legitimate functionality or development tooling from being blocked.
