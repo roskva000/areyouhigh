@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Zap, Palette, Gauge, ArrowLeft, Check, Camera, Hexagon, Tv, Sparkles, Blend, ThumbsUp, ThumbsDown, MessageSquare, Send, Maximize, RotateCw, Layers } from 'lucide-react';
+import { Play, Zap, Palette, Gauge, ArrowLeft, Check, Camera, Hexagon, Tv, Sparkles, Blend, ThumbsUp, ThumbsDown, MessageSquare, Send, Maximize, RotateCw, Layers, Loader2 } from 'lucide-react';
 import gsap from 'gsap';
 import { HexColorPicker } from 'react-colorful';
 import useVotes from '../hooks/useVotes';
@@ -160,15 +160,15 @@ function ArtifactLogs({ experienceId }) {
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={!commentsReady ? 'Community features temporarily unavailable' : `Log entry as ${currentNickname}...`}
                     disabled={!commentsReady || isSubmitting}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                     aria-label="Submit log entry"
                     type="submit"
                     disabled={!commentsReady || !newComment.trim() || isSubmitting}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-white/40 hover:text-accent disabled:opacity-30 disabled:hover:text-white/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md"
                 >
-                    <Send size={14} />
+                    {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 </button>
             </form>
         </div>
