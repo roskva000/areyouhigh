@@ -52,10 +52,12 @@ const Tooltip = ({ text, children }) => {
             className="relative flex items-center w-full"
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
+            onFocus={() => setShow(true)}
+            onBlur={() => setShow(false)}
         >
             {children}
             {show && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 border border-white/20 text-white text-[10px] font-mono rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none">
+                <div role="tooltip" className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 border border-white/20 text-white text-[10px] font-mono rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none">
                     {text}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-900"></div>
                 </div>
