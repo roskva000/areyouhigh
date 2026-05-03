@@ -76,26 +76,41 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    const categories = useMemo(() => {
+        return ['All', ...new Set(masterGroups.map(g => g.category))];
+    }, [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // Filter and Sort: Memoized together to avoid redundant array creation
+    const sortedGroups = useMemo(() => {
+        // Hoist invariant search lowercase out of the loop
+        const lowerSearch = search.toLowerCase();
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+        return masterGroups
+            .filter(group => {
+                // Cheaper check first: Category
+                const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+                if (!matchesCategory) return false;
+
+                // More expensive check: String search
+                if (!lowerSearch) return true;
+
+                const matchesSearch = group.title.toLowerCase().includes(lowerSearch) ||
+                    group.items.some(item => item.title.toLowerCase().includes(lowerSearch));
+
+                return matchesSearch;
+            })
+            // sort mutates the array in place, which is safe here as filter returned a new array
+            .sort((a, b) => {
+                // Primary sort: Likes (Descending)
+                if (b.totalLikes !== a.totalLikes) {
+                    return b.totalLikes - a.totalLikes;
+                }
+                // Secondary sort: Special items first
+                if (a.isSpecial && !b.isSpecial) return -1;
+                if (!a.isSpecial && b.isSpecial) return 1;
+                return 0;
+            });
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
