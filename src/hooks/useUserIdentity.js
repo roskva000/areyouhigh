@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 
 const ADJECTIVES = [
     'Silent', 'Neon', 'Cosmic', 'Lost', 'Hidden', 'Solar', 'Lunar', 'Digital', 'Analog', 'Quantum',
@@ -23,12 +23,12 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
-    if (!storedId) {
+    if (!storedId || !uuidValidate(storedId)) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
     }
 
-    if (!storedNick) {
+    if (!storedNick || storedNick.length > 50) {
         storedNick = generateNickname();
         localStorage.setItem('experience_user_nick', storedNick);
     }
