@@ -35,17 +35,14 @@ export default function Gallery() {
 
     // Group experiences by Master Shader
     const masterGroups = useMemo(() => {
-        const groups = {};
-        EXPERIENCES.forEach(exp => {
-            if (!groups[exp.master]) {
-                groups[exp.master] = [];
-            }
-            groups[exp.master].push(exp);
-        });
+        // ⚡ Bolt Optimization: Use reduce with ??= and Object.entries for faster array grouping and mapping
+        const groups = EXPERIENCES.reduce((acc, exp) => {
+            (acc[exp.master] ??= []).push(exp);
+            return acc;
+        }, {});
 
         // Convert map to array for sorting/filtering
-        return Object.keys(groups).map(key => {
-            const items = groups[key];
+        return Object.entries(groups).map(([key, items]) => {
             const isSpecial = key.startsWith('special_');
 
             // For special/featured items (singletons), use their exact title
