@@ -23,6 +23,16 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    // 🛡️ Sentinel: Validate untrusted local storage input to prevent payload injection/storage exhaustion
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (storedId && (!uuidRegex.test(storedId) || storedId.length > 36)) {
+        storedId = null;
+    }
+
+    if (storedNick && (typeof storedNick !== 'string' || storedNick.length > 50)) {
+        storedNick = null;
+    }
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
