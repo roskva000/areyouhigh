@@ -1,3 +1,6 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+## 2023-10-27 - Localization vs. Accessibility
+**Learning:** When expanding generic `aria-label`s in localized UI components (e.g., Turkish interfaces), the expanded descriptive string must remain in the native language. Translating an `aria-label` to English to make it "more descriptive" introduces a major accessibility regression, as screen readers running in the native language will mispronounce the English text unless explicit `lang` attributes are added (which is often a bad practice for single components in a mostly-localized flow).
+**Action:** Always match the language of an injected `aria-label` to the existing localized strings surrounding it to ensure seamless text-to-speech output.
