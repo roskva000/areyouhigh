@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [Storage Exhaustion via Untrusted Local Storage]
+**Vulnerability:** The application reads `experience_user_id` and `experience_user_nick` from `localStorage` and uses them directly in Supabase backend queries (e.g., in `useComments.js` and `GlobalChat.jsx`) without validating their length. An attacker could inject massive strings into `localStorage`, leading to bloated database records, potential storage exhaustion, or payload injection.
+**Learning:** Client-side storage mechanisms like `localStorage` are untrusted input vectors. Data retrieved from them must be treated with the same suspicion as data coming from a network request or a user form.
+**Prevention:** Always validate, sanitize, and enforce length limits on data read from `localStorage` before using it in application state or backend requests.
