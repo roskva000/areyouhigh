@@ -23,6 +23,16 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    // Validate storedId to prevent payload injection (must be alphanumeric/hyphens and reasonably sized)
+    if (storedId && (storedId.length > 50 || !/^[a-zA-Z0-9-]+$/.test(storedId))) {
+        storedId = null; // Reset if invalid
+    }
+
+    // Validate storedNick to prevent storage exhaustion or DB errors
+    if (storedNick && storedNick.length > 50) {
+        storedNick = storedNick.substring(0, 50); // Truncate
+    }
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
