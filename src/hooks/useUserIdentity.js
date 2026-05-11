@@ -23,6 +23,15 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    // Validate and limit untrusted input from localStorage
+    if (storedId && storedId.length > 50) {
+        storedId = null; // Reset if unusually long (UUIDs are 36 chars)
+    }
+    if (storedNick) {
+        storedNick = storedNick.substring(0, 50).trim();
+        if (!storedNick) storedNick = null;
+    }
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
