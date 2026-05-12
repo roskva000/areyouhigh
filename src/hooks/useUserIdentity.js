@@ -23,6 +23,10 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    // Sanitize untrusted input from localStorage
+    if (storedId) storedId = String(storedId).substring(0, 50).replace(/[^a-zA-Z0-9_-]/g, '');
+    if (storedNick) storedNick = String(storedNick).substring(0, 50).replace(/[^a-zA-Z0-9 _-]/g, '');
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
