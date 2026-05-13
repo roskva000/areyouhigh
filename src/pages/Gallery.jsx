@@ -76,26 +76,46 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // ⚡ Bolt Optimization: Memoize categories, hoist invariants, and short-circuit expensive string matching
+    const { categories, sortedGroups } = useMemo(() => {
+        const cats = ['All', ...new Set(masterGroups.map(g => g.category))];
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+        const searchLower = search.toLowerCase();
+        const isSearchEmpty = search === '';
+        const isCategoryAll = activeCategory === 'All';
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+        const filtered = masterGroups.filter(group => {
+            // Short circuit category check first
+            if (!isCategoryAll && group.category !== activeCategory) {
+                return false;
+            }
+
+            // Short circuit empty search
+            if (isSearchEmpty) {
+                return true;
+            }
+
+            // Expensive string searches last
+            if (group.title.toLowerCase().includes(searchLower)) {
+                return true;
+            }
+
+            return group.items.some(item => item.title.toLowerCase().includes(searchLower));
+        });
+
+        const sorted = [...filtered].sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+
+        return { categories: cats, sortedGroups: sorted };
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
