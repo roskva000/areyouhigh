@@ -23,6 +23,14 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    // 🛡️ Sentinel: Validate untrusted local storage input to prevent payload injection
+    if (storedId && storedId.length > 50) {
+        storedId = storedId.substring(0, 50);
+    }
+    if (storedNick && storedNick.length > 50) {
+        storedNick = storedNick.substring(0, 50);
+    }
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
