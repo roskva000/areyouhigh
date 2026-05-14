@@ -22,12 +22,16 @@ const ExperienceCard = ({
         }
     };
 
+    let ariaLabelText = `${title} deneyimini aç`;
+    if (likeCount > 0) ariaLabelText += `. ${likeCount} beğeni`;
+    if (!isSpecial && variantCount > 0) ariaLabelText += `. ${variantCount} varyant`;
+
     return (
         <button
             type="button"
             className="gallery-card group relative h-80 w-full rounded-[2.5rem] overflow-hidden cursor-pointer bg-zinc-900 border border-white/10 hover:border-accent/50 transition-all duration-500 shadow-2xl text-left appearance-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-accent focus-visible:border-accent"
             onClick={handleClick}
-            aria-label={`${title} deneyimini aç`}
+            aria-label={ariaLabelText}
         >
             {/* Dynamic Background Image */}
             <div className="absolute inset-0 z-0 bg-zinc-950">
