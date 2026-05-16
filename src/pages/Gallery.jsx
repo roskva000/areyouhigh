@@ -76,26 +76,38 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
+    // ⚡ Bolt Optimization: Memoize category extraction to prevent recalculation on every render
+    const categories = useMemo(() => ['All', ...new Set(masterGroups.map(g => g.category))], [masterGroups]);
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    // ⚡ Bolt Optimization: Memoize filtering and sorting to prevent recalculation on every render
+    const sortedGroups = useMemo(() => {
+        // Hoist search toLowerCase() outside the loop
+        const lowerSearch = search.toLowerCase();
 
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+        const filteredGroups = masterGroups.filter(group => {
+            // ⚡ Bolt Optimization: Short-circuit evaluation
+            // Check less expensive exact matches (category) before costly string operations
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            if (!matchesCategory) return false;
+
+            const matchesSearch = group.title.toLowerCase().includes(lowerSearch) ||
+                group.items.some(item => item.title.toLowerCase().includes(lowerSearch));
+
+            return matchesSearch;
+        });
+
+        // Sort: Primarily by likes (descending)
+        return [...filteredGroups].sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
