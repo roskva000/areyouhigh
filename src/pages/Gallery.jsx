@@ -78,11 +78,16 @@ export default function Gallery() {
 
     const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
 
+    // ⚡ Bolt Optimization: Hoist search.toLowerCase() to avoid redundant string allocations
+    const lowerSearch = search.toLowerCase();
     const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
         const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
+        // ⚡ Bolt Optimization: Use short-circuit evaluation by checking exact match before costly string operations
+        if (!matchesCategory) return false;
+
+        const matchesSearch = group.title.toLowerCase().includes(lowerSearch) ||
+            group.items.some(item => item.title.toLowerCase().includes(lowerSearch));
+        return matchesSearch;
     });
 
     // Sort: Primarily by likes (descending)
