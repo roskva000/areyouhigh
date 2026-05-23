@@ -23,12 +23,12 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
-    if (!storedId) {
+    if (!storedId || storedId.length !== 36 || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(storedId)) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
     }
 
-    if (!storedNick) {
+    if (!storedNick || storedNick.length > 50) {
         storedNick = generateNickname();
         localStorage.setItem('experience_user_nick', storedNick);
     }
