@@ -1,3 +1,6 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+## 2024-05-23 - Focus States on Custom Inputs
+**Learning:** Custom UI elements like inline hex color inputs (inside styled containers) often lack visible focus states. When users tab into these inputs, they need clear visual indicators (like `focus-visible:ring-2 focus-visible:ring-accent`) to understand their position. Screen readers also need an explicit `aria-label` when no visible `<label>` is present.
+**Action:** When implementing custom inputs within styled containers (like a color picker block), always add `aria-label` and `focus-visible` utility classes to ensure accessibility for screen reader and keyboard-only users.

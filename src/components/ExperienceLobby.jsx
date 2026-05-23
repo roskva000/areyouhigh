@@ -405,9 +405,10 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                                 <div className="w-6 h-6 rounded bg-current border border-white/20" style={{ color: activePalette.color }}></div>
                                 <input
                                     type="text"
+                                    aria-label="Hex color value"
                                     value={activePalette.color}
                                     onChange={(e) => handleColorChange(e.target.value)}
-                                    className="bg-transparent text-white font-mono text-xs focus:outline-none w-full uppercase"
+                                    className="bg-transparent text-white font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-sm px-1 w-full uppercase"
                                 />
                             </div>
                         </div>
