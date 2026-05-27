@@ -23,6 +23,19 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    // Security: Validate and sanitize untrusted client-side inputs
+    if (storedId && typeof storedId === 'string') {
+        storedId = storedId.slice(0, 50);
+    } else {
+        storedId = null;
+    }
+
+    if (storedNick && typeof storedNick === 'string') {
+        storedNick = storedNick.slice(0, 50);
+    } else {
+        storedNick = null;
+    }
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
