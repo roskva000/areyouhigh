@@ -170,7 +170,7 @@ export default function Gallery() {
                                 placeholder="Search algorithms..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full md:w-80 bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-text focus:outline-none focus:border-accent/40 transition-all font-mono text-sm"
+                                className="w-full md:w-80 bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-text focus:outline-none focus:border-accent/40 focus-visible:ring-2 focus-visible:ring-accent transition-all font-mono text-sm"
                             />
                         </div>
 
