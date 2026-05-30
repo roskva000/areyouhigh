@@ -155,12 +155,13 @@ function ArtifactLogs({ experienceId }) {
 
             <form onSubmit={handleSubmit} className="relative group shrink-0">
                 <input
+                    aria-label="New artifact log"
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     placeholder={!commentsReady ? 'Community features temporarily unavailable' : `Log entry as ${currentNickname}...`}
                     disabled={!commentsReady || isSubmitting}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-white font-mono text-[10px] focus:outline-none focus:border-accent/50 focus-visible:ring-2 focus-visible:ring-accent transition-all placeholder:text-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <button
                     aria-label="Submit log entry"
@@ -404,10 +405,11 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             <div className="flex items-center gap-2 w-full bg-black/40 p-2 rounded-lg border border-white/10">
                                 <div className="w-6 h-6 rounded bg-current border border-white/20" style={{ color: activePalette.color }}></div>
                                 <input
+                                    aria-label="Hex color code"
                                     type="text"
                                     value={activePalette.color}
                                     onChange={(e) => handleColorChange(e.target.value)}
-                                    className="bg-transparent text-white font-mono text-xs focus:outline-none w-full uppercase"
+                                    className="bg-transparent text-white font-mono text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-accent w-full uppercase"
                                 />
                             </div>
                         </div>
