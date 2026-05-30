@@ -23,6 +23,13 @@ const getStoredIdentity = () => {
     let storedId = localStorage.getItem('experience_user_id');
     let storedNick = localStorage.getItem('experience_user_nick');
 
+    if (typeof storedId === 'string' && storedId.length > 50) {
+        storedId = storedId.substring(0, 50);
+    }
+    if (typeof storedNick === 'string' && storedNick.length > 50) {
+        storedNick = storedNick.substring(0, 50);
+    }
+
     if (!storedId) {
         storedId = uuidv4();
         localStorage.setItem('experience_user_id', storedId);
