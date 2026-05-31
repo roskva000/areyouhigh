@@ -217,8 +217,17 @@ export default function Gallery() {
                     })}
 
                     {sortedGroups.length === 0 && (
-                        <div className="col-span-full py-20 text-center opacity-30 font-mono italic">
-                            No master algorithms found matching your search.
+                        <div className="col-span-full py-20 flex flex-col items-center justify-center text-center opacity-50 font-mono">
+                            <p className="italic mb-4">No master algorithms found matching your search.</p>
+                            <button
+                                onClick={() => {
+                                    setSearch('');
+                                    setActiveCategory('All');
+                                }}
+                                className="px-6 py-2 rounded-full border border-white/20 hover:bg-white/10 hover:text-white transition-colors uppercase tracking-widest text-xs focus-visible:ring-2 focus-visible:ring-accent"
+                            >
+                                Clear Filters
+                            </button>
                         </div>
                     )}
                 </div>
