@@ -78,11 +78,17 @@ export default function Gallery() {
 
     const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
 
+    const searchLower = search.toLowerCase();
     const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
+        // Optimize: short-circuit by checking less expensive exact match (category) first
         const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
+        if (!matchesCategory) return false;
+
+        // Optimize: avoid expensive string operations if search is empty
+        if (!searchLower) return true;
+
+        return group.title.toLowerCase().includes(searchLower) ||
+            group.items.some(item => item.title.toLowerCase().includes(searchLower));
     });
 
     // Sort: Primarily by likes (descending)
