@@ -12,3 +12,6 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+## 2024-10-24 - React Render String Allocation Bottleneck
+**Learning:** Repeatedly calling `.toLowerCase()` inside `.filter()` and `.some()` loops during a React render cycle causes O(N*M) string allocations, leading to jank when a user types into a search input.
+**Action:** Hoist invariant string operations (like `search.toLowerCase()`) outside of array iterations and use `useMemo` to cache the derived list, preventing redundant computations across re-renders.
