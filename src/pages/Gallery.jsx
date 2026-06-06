@@ -217,8 +217,22 @@ export default function Gallery() {
                     })}
 
                     {sortedGroups.length === 0 && (
-                        <div className="col-span-full py-20 text-center opacity-30 font-mono italic">
-                            No master algorithms found matching your search.
+                        <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
+                            <p className="opacity-50 font-mono italic mb-4">
+                                No master algorithms found matching your search.
+                            </p>
+                            {(search || activeCategory !== 'All') && (
+                                <button
+                                    onClick={() => {
+                                        setSearch('');
+                                        setActiveCategory('All');
+                                    }}
+                                    className="px-6 py-2 rounded-xl border border-accent/20 bg-accent/10 hover:bg-accent/20 text-accent font-mono text-xs uppercase tracking-widest transition-all focus-visible:ring-2 focus-visible:ring-accent outline-none"
+                                    aria-label="Clear all filters and search"
+                                >
+                                    Clear Filters
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>
