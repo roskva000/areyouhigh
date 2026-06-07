@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-05-24 - Fix untrusted localStorage payload injection
+**Vulnerability:** `localStorage` values (`experience_user_id`, `experience_user_nick`) were used directly without validation, risking payload injection and storage exhaustion when sent to Supabase.
+**Learning:** Client-side storage is inherently untrusted. Even in a Vite SPA, any retrieved value must be treated as external input and validated before use.
+**Prevention:** Always type-check and length-limit values retrieved from `localStorage` before utilizing them in application state or backend requests.
