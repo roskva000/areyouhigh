@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2025-02-14 - Fix payload injection vulnerability via localStorage
+
+**Vulnerability:** Untrusted client-side inputs retrieved from `localStorage` (`experience_user_id` and `experience_user_nick`) are used directly without type-checking or length-limiting.
+**Learning:** These inputs could lead to payload injection or storage exhaustion when sent to backend requests. It's important to not trust localStorage implicitly.
+**Prevention:** Always validate, type-check, and limit length of data read from localStorage before using it, especially before sending it to a backend.
