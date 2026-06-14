@@ -91,4 +91,20 @@ const ExperienceCard = ({
     );
 };
 
-export default React.memo(ExperienceCard);
+const propsAreEqual = (prevProps, nextProps) => {
+    return (
+        prevProps.title === nextProps.title &&
+        prevProps.category === nextProps.category &&
+        prevProps.thumbId === nextProps.thumbId &&
+        prevProps.accentColor === nextProps.accentColor &&
+        prevProps.description === nextProps.description &&
+        prevProps.isSpecial === nextProps.isSpecial &&
+        prevProps.variantCount === nextProps.variantCount &&
+        prevProps.likeCount === nextProps.likeCount &&
+        prevProps.index === nextProps.index &&
+        prevProps.group?.id === nextProps.group?.id
+    );
+};
+
+// Optimization: Custom comparison function to prevent re-renders caused by inline/recreated functions in lists.
+export default React.memo(ExperienceCard, propsAreEqual);
