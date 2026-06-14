@@ -1,3 +1,6 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+## 2024-06-14 - [Actionable Empty States]
+**Learning:** Empty states caused by search or filters (like in the Gallery page) should not be dead ends. Providing purely informational text leaves the user stranded. Adding an actionable recovery mechanism (like a 'Clear Filters' button) significantly improves usability by allowing users to easily restore the default view without manual effort.
+**Action:** Always include a 'Clear Filters' or 'Reset' button when designing empty states for search or filtering mechanisms. Ensure this button uses standard design system utility classes and maintains keyboard accessibility via `focus-visible`.
