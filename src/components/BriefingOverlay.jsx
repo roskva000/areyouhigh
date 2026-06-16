@@ -83,6 +83,7 @@ export default function BriefingOverlay({ onComplete }) {
 
             {/* Skip hint */}
             <button
+                aria-label="Skip briefing"
                 onClick={() => {
                     gsap.to(containerRef.current, {
                         opacity: 0,
