@@ -91,7 +91,7 @@ export default function BriefingOverlay({ onComplete }) {
                         onComplete
                     });
                 }}
-                className="absolute bottom-12 font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/50 transition-colors"
+                className="absolute bottom-12 font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-colors rounded-sm px-2 py-1"
             >
                 Press to skip
             </button>
