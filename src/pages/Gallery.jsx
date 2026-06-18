@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ExperienceCard from '../components/ExperienceCard';
 import { EXPERIENCES } from '../data/experiences';
-import { Search, ArrowLeft } from 'lucide-react';
+import { Search, ArrowLeft, X } from 'lucide-react';
 import SEO from '../components/SEO';
 import { supabase } from '../lib/supabase';
 import isSupabaseReady from '../lib/isSupabaseReady';
@@ -217,8 +217,15 @@ export default function Gallery() {
                     })}
 
                     {sortedGroups.length === 0 && (
-                        <div className="col-span-full py-20 text-center opacity-30 font-mono italic">
-                            No master algorithms found matching your search.
+                        <div className="col-span-full py-20 text-center font-mono">
+                            <p className="opacity-50 mb-6 italic">No master algorithms found matching your search.</p>
+                            <button
+                                onClick={() => { setSearch(''); setActiveCategory('All'); }}
+                                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all text-sm uppercase tracking-widest text-text/70 hover:text-text"
+                            >
+                                <X size={16} />
+                                Clear Filters
+                            </button>
                         </div>
                     )}
                 </div>
