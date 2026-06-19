@@ -12,3 +12,6 @@
 ## 2026-03-01 - WebGL VRAM Leak Prevention
 **Learning:** Found a severe memory leak in `ShaderExperience.jsx` where WebGL shaders (`gl.createShader`) and buffers (`gl.createBuffer`) were being created on every component mount or config change, but were not being deleted in the `useEffect` cleanup function. Only `gl.deleteProgram` was called. Over time, navigating between gallery items or changing parameters would exhaust GPU VRAM.
 **Action:** Always pair WebGL creation methods (`createShader`, `createBuffer`) with their corresponding destruction methods (`deleteShader`, `deleteBuffer`) in the React component's cleanup phase to ensure deep cleanup of GPU resources.
+## 2024-06-19 - useMemo Contextual Nuance
+**Learning:** In `src/pages/Gallery.jsx`, optimizing derived list calculations with `useMemo` avoids heavy computational overhead but technically prevents redundant *re-calculations*, not component re-renders themselves. Furthermore, utilizing JavaScript's native behavior where `.filter()` allocates a new array instance enables in-place `.sort()` mutation safely, eliminating the need for an extra `[...filtered]` spread operation.
+**Action:** Be precise in comments regarding `useMemo`'s actual functionality, and leverage natural array allocations (like from `filter` or `map`) to avoid redundant array clones when chaining mutating methods like `sort`.
