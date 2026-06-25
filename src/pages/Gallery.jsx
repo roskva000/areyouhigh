@@ -76,26 +76,31 @@ export default function Gallery() {
         });
     }, [allVotes]);
 
-    const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
-
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
+    const categories = useMemo(() => ['All', ...new Set(masterGroups.map(g => g.category))], [masterGroups]);
 
     // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    const sortedGroups = useMemo(() => {
+        const searchLower = search.toLowerCase();
+
+        const filteredGroups = masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        });
+
+        // Since filteredGroups is a newly allocated array from .filter(), we can safely mutate it in-place
+        return filteredGroups.sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
