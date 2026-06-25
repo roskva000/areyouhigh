@@ -44,7 +44,7 @@ export default function Navbar() {
         >
             <div className="container mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
-                <Link to="/" className="text-2xl font-black tracking-tighter text-white group">
+                <Link to="/" className="text-2xl font-black tracking-tighter text-white group rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                     <span className="text-white group-hover:text-accent transition-colors">u</span>High?
                 </Link>
 
@@ -53,7 +53,7 @@ export default function Navbar() {
                     <Link
                         to="/#experiences"
                         onClick={(e) => handleScrollToSection(e, 'experiences')}
-                        className={`font-mono text-sm uppercase tracking-widest transition-colors ${isGallery ? 'text-accent font-bold' : 'text-white/60 hover:text-white'
+                        className={`font-mono text-sm uppercase tracking-widest transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${isGallery ? 'text-accent font-bold' : 'text-white/60 hover:text-white'
                             }`}
                     >
                         Artifacts
@@ -61,7 +61,7 @@ export default function Navbar() {
                     <Link
                         to="/#philosophy"
                         onClick={(e) => handleScrollToSection(e, 'philosophy')}
-                        className="font-mono text-sm uppercase tracking-widest text-white/60 hover:text-white transition-colors"
+                        className="font-mono text-sm uppercase tracking-widest text-white/60 hover:text-white transition-colors rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
                         Manifesto
                     </Link>
@@ -70,7 +70,7 @@ export default function Navbar() {
                 {/* CTA - Now links to Gallery as requested */}
                 <Link
                     to="/gallery"
-                    className="relative group px-5 py-2 overflow-hidden rounded-full border border-white/20 hover:border-accent/50 transition-all"
+                    className="relative group px-5 py-2 overflow-hidden rounded-full border border-white/20 hover:border-accent/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 >
                     <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/10 transition-colors"></div>
                     <span className="relative font-mono text-xs font-bold uppercase tracking-widest text-white group-hover:text-accent transition-colors flex items-center gap-2">
