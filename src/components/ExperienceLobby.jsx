@@ -52,10 +52,12 @@ const Tooltip = ({ text, children }) => {
             className="relative flex items-center w-full"
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
+            onFocus={() => setShow(true)}
+            onBlur={() => setShow(false)}
         >
             {children}
             {show && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 border border-white/20 text-white text-[10px] font-mono rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none">
+                <div role="tooltip" className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-zinc-900 border border-white/20 text-white text-[10px] font-mono rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none">
                     {text}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-900"></div>
                 </div>
@@ -195,8 +197,10 @@ const TabButton = ({ id, activeTab, setActiveTab, label, icon: IconComponent }) 
 const PillButton = ({ active, onClick, children, tooltip, className = '' }) => (
     <Tooltip text={tooltip}>
         <button
+            type="button"
+            aria-pressed={active}
             onClick={onClick}
-            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 ${active
+            className={`w-full py-3 px-3 rounded-xl border transition-all font-mono text-[9px] md:text-[10px] uppercase tracking-wider flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 ${active
                 ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.25)]'
                 : 'bg-white/5 text-white/50 border-white/5 hover:bg-white/10 hover:text-white'
                 } ${className}`}
