@@ -1,3 +1,6 @@
 ## 2024-05-24 - [ARIA label overrides inner text]
 **Learning:** Adding an `aria-label` to a button completely overrides its inner text for screen readers. If a button contains an icon and dynamic text (like a 'like' count), the screen reader will only read the `aria-label` and the text will be hidden.
 **Action:** When adding `aria-label`s to icon-only interactive elements that also contain dynamic visible data (like counts), you must incorporate the dynamic data directly into the `aria-label` string (e.g., `aria-label={"Like experience. Currently " + likes + " likes"}`).
+## 2024-05-24 - Keyboard Accessibility in Custom Experience Controls
+**Learning:** Custom interactive components within the Experience Lobby (such as Tabs, bespoke range inputs, and custom pill buttons) completely lacked visible focus indicators (`focus-visible` classes), rendering the primary system interaction flow invisible to keyboard users.
+**Action:** When building or modifying custom interactive UI elements (especially those deviating from native browser defaults like bespoke range tracks), always ensure explicit `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color] focus-visible:ring-offset-2` utility classes are applied for predictable, accessible keyboard navigation.
