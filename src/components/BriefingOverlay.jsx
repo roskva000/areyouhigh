@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 
 const MESSAGES = [
@@ -59,6 +59,26 @@ export default function BriefingOverlay({ onComplete }) {
         );
     }, []);
 
+    const handleSkip = React.useCallback(() => {
+        gsap.to(containerRef.current, {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power2.inOut",
+            onComplete
+        });
+    }, [onComplete]);
+
+    // Keyboard shortcut to skip
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
+                handleSkip();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleSkip]);
+
     return (
         <div
             ref={containerRef}
@@ -83,17 +103,10 @@ export default function BriefingOverlay({ onComplete }) {
 
             {/* Skip hint */}
             <button
-                onClick={() => {
-                    gsap.to(containerRef.current, {
-                        opacity: 0,
-                        duration: 0.5,
-                        ease: "power2.inOut",
-                        onComplete
-                    });
-                }}
-                className="absolute bottom-12 font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/50 transition-colors"
+                onClick={handleSkip}
+                className="absolute bottom-12 font-mono text-[10px] text-white/20 uppercase tracking-[0.1em] hover:text-white/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded px-3 py-2 flex items-center justify-center gap-2"
             >
-                Press to skip
+                Press <kbd className="font-sans px-1.5 py-0.5 bg-white/10 border border-white/20 rounded text-white/70 tracking-normal shadow-sm">Enter</kbd> to skip
             </button>
         </div>
     );
