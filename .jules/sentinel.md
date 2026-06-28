@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-06-28 - Missing Content Security Policy
+**Vulnerability:** The application lacks a Content-Security-Policy (CSP) in vercel.json, allowing any external scripts or resources to load, which increases XSS risks.
+**Learning:** Because the project integrates multiple external services (Supabase, Google Tag Manager, Unsplash), a CSP wasn't initially configured to avoid breaking these integrations.
+**Prevention:** Programmatically extract and verify all external domains used in the project (e.g., via index.html and source files) to build and enforce a strict CSP before deployment.
