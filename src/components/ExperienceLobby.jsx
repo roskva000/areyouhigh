@@ -404,6 +404,7 @@ export default function ExperienceLobby({ title, description, onLaunch, onBack, 
                             <div className="flex items-center gap-2 w-full bg-black/40 p-2 rounded-lg border border-white/10">
                                 <div className="w-6 h-6 rounded bg-current border border-white/20" style={{ color: activePalette.color }}></div>
                                 <input
+                                    aria-label="Hex color value"
                                     type="text"
                                     value={activePalette.color}
                                     onChange={(e) => handleColorChange(e.target.value)}
