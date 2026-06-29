@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2025-02-27 - Added Content-Security-Policy Header
+**Vulnerability:** The application was missing a Content-Security-Policy (CSP) header in its deployment configuration (vercel.json), exposing it to potential Cross-Site Scripting (XSS) and data injection attacks.
+**Learning:** CSP headers need to be explicitly defined in deployment configurations. Relying solely on default framework configurations might leave out essential HTTP security headers in production.
+**Prevention:** Always verify and enforce strict Content-Security-Policy headers in deployment manifests (like vercel.json or next.config.js) specifying explicit `default-src`, `script-src`, `style-src`, etc. tailored to the external resources utilized by the application.
