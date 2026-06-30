@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - Content Security Policy Configuration
+**Vulnerability:** The application was missing a Content-Security-Policy (CSP) header, which could expose users to Cross-Site Scripting (XSS) or data injection attacks.
+**Learning:** Modern SPAs that integrate third-party services like Supabase, Google Tag Manager, and Unsplash require meticulously configured CSPs to permit required resources while blocking unauthorized external connections.
+**Prevention:** Always implement a strict CSP that relies on a `default-src 'self'` baseline, with explicitly whitelisted external domains for scripts, styles, images, and connections (like `https://*.supabase.co` for Supabase) mapped from the codebase requirements.
