@@ -16,3 +16,7 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+## 2024-07-04 - Add Content-Security-Policy Header
+**Vulnerability:** Missing Content-Security-Policy (CSP) allows execution of unauthorized scripts and data exfiltration.
+**Learning:** The application lacked a CSP to restrict resource origins, relying only on basic XSS protection headers.
+**Prevention:** Always implement a strict CSP that explicitly allows only verified domains (e.g., Supabase, Google Fonts, Tag Manager) to mitigate XSS and injection attacks.
