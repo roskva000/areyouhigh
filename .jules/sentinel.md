@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-05-24 - [Supabase Content-Security-Policy Configuration]
+**Vulnerability:** The application lacked a Content-Security-Policy (CSP) in vercel.json, leaving it vulnerable to XSS and data injection attacks.
+**Learning:** Supabase requires wildcard domains (https://*.supabase.co and wss://*.supabase.co) in the connect-src directive because projects dynamically connect to randomized subdomains rather than a static URL.
+**Prevention:** Always use wildcard domains for Supabase connections when configuring CSPs, and ensure only explicitly verified external domains are included to maintain strict security boundaries.
