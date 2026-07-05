@@ -59,6 +59,31 @@ export default function BriefingOverlay({ onComplete }) {
         );
     }, []);
 
+    // Keyboard shortcut to skip
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape' || e.key === ' ' || e.key === 'Enter') {
+                // If a button is focused, let its native click handler manage Space/Enter
+                if (document.activeElement?.tagName === 'BUTTON' && e.key !== 'Escape') return;
+
+                // Prevent default scrolling for Space
+                if (e.key === ' ') e.preventDefault();
+
+                gsap.to(containerRef.current, {
+                    opacity: 0,
+                    duration: 0.5,
+                    ease: "power2.inOut",
+                    onComplete
+                });
+
+                // Remove listener immediately to prevent double fires
+                window.removeEventListener('keydown', handleKeyDown);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onComplete]);
+
     return (
         <div
             ref={containerRef}
@@ -83,7 +108,9 @@ export default function BriefingOverlay({ onComplete }) {
 
             {/* Skip hint */}
             <button
-                onClick={() => {
+                onClick={(e) => {
+                    // Prevent focus outline if clicked with mouse
+                    e.target.blur();
                     gsap.to(containerRef.current, {
                         opacity: 0,
                         duration: 0.5,
@@ -91,9 +118,9 @@ export default function BriefingOverlay({ onComplete }) {
                         onComplete
                     });
                 }}
-                className="absolute bottom-12 font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/50 transition-colors"
+                className="absolute bottom-12 font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] hover:text-white/50 transition-colors rounded-sm px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
             >
-                Press to skip
+                Press to skip <span className="opacity-50 lowercase tracking-normal">(esc/space)</span>
             </button>
         </div>
     );
