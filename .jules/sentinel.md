@@ -16,3 +16,8 @@
 **Vulnerability:** Logging raw database error objects (from Supabase) to the browser console.
 **Learning:** Supabase `error` objects can contain database constraints, table names, or internal state. Exposing them in client-side logs creates an information leakage risk.
 **Prevention:** Always catch and sanitize API/Database errors before logging them in client-side code; fail securely with generic error messages.
+
+## 2024-07-06 - [Supabase CSP Dynamic Configuration]
+**Vulnerability:** Adding a rigid CSP for Supabase by hardcoding the project URL blocks dynamic or environment-specific database connections.
+**Learning:** Supabase requires both `https://*.supabase.co` and `wss://*.supabase.co` in `connect-src` to allow its realtime channels and REST APIs to function across different environments.
+**Prevention:** Always use wildcard domains for Supabase endpoints in `connect-src` directives to ensure realtime listeners (`wss://`) and data fetching (`https://`) do not break when migrating projects.
