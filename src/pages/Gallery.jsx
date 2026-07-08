@@ -78,24 +78,25 @@ export default function Gallery() {
 
     const categories = ['All', ...new Set(masterGroups.map(g => g.category))];
 
-    const filteredGroups = masterGroups.filter(group => {
-        const matchesSearch = group.title.toLowerCase().includes(search.toLowerCase()) ||
-            group.items.some(item => item.title.toLowerCase().includes(search.toLowerCase()));
-        const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
-        return matchesSearch && matchesCategory;
-    });
-
-    // Sort: Primarily by likes (descending)
-    const sortedGroups = [...filteredGroups].sort((a, b) => {
-        // Primary sort: Likes (Descending)
-        if (b.totalLikes !== a.totalLikes) {
-            return b.totalLikes - a.totalLikes;
-        }
-        // Secondary sort: Special items first
-        if (a.isSpecial && !b.isSpecial) return -1;
-        if (!a.isSpecial && b.isSpecial) return 1;
-        return 0;
-    });
+    // ⚡ BOLT OPTIMIZATION: Wrapped list filtering and sorting in useMemo to prevent redundant computations on every render. Hoisted search.toLowerCase() to avoid invariant recalculation inside loops, and removed redundant array cloning before sort. Impact: Reduces filtering/sorting overhead on non-dependency re-renders by ~100%, and improves iteration speed by removing O(N * M) redundant string allocations.
+    const sortedGroups = useMemo(() => {
+        const searchLower = search.toLowerCase();
+        return masterGroups.filter(group => {
+            const matchesSearch = group.title.toLowerCase().includes(searchLower) ||
+                group.items.some(item => item.title.toLowerCase().includes(searchLower));
+            const matchesCategory = activeCategory === 'All' || group.category === activeCategory;
+            return matchesSearch && matchesCategory;
+        }).sort((a, b) => {
+            // Primary sort: Likes (Descending)
+            if (b.totalLikes !== a.totalLikes) {
+                return b.totalLikes - a.totalLikes;
+            }
+            // Secondary sort: Special items first
+            if (a.isSpecial && !b.isSpecial) return -1;
+            if (!a.isSpecial && b.isSpecial) return 1;
+            return 0;
+        });
+    }, [masterGroups, search, activeCategory]);
 
     useEffect(() => {
         window.scrollTo(0, 0);
